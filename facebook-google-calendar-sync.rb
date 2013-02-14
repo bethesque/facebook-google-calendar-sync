@@ -11,17 +11,33 @@ require 'ri_cal'
 require 'logger'
 require 'active_support/core_ext/hash/indifferent_access'
 
-config = YAML.load_file('config.yml').with_indifferent_access
+
+module FacebookGoogleCalendarSync  
+  module Logging
+    require 'logger'
+    @@logger = Logger.new(STDOUT)
+
+    def logger
+      @@logger
+    end
+
+  end
+end
+
+
+config = YAML.load_file(Pathname.new(ENV['HOME']) + '.facebook-google-calendar-sync' + 'config.yml').with_indifferent_access
 
 class SyncException < StandardError
 end
 
 class GoogleCalendar
 
+  include FacebookGoogleCalendarSync::Logging
+
   def initialize details, data    
     @details = details
     @data = data
-    @log = Logger.new(STDOUT)
+    #@log = Logger.new(STDOUT)
   end
 
   def self.set_client client
@@ -56,15 +72,15 @@ class GoogleCalendar
     target_event = find_event_by_uid source_event.uid
     source_event_hash = ICalToGoogleCalendarConverter.convert(source_event)    
     if target_event == nil
-      @log.info "Adding #{source_event.summary} to #{@details.summary}"
+      logger.info "Adding #{source_event.summary} to #{@details.summary}"
       @@client.add_event id, source_event_hash      
       return true
     else            
       if source_event.last_modified.to_time > target_event.updated || source_event.summary == 'Ladies Brunch'
-        @log.info "Updating #{source_event.summary} in #{@details.summary}"
+        logger.info "Updating #{source_event.summary} in #{@details.summary}"
         @@client.update_event id, target_event.id, target_event.to_hash.merge(source_event_hash)        
       else
-        @log.info "Not updating #{source_event.summary} in #{@details.summary} as #{source_event.last_modified} is not later than #{target_event.updated}"        
+        logger.info "Not updating #{source_event.summary} in #{@details.summary} as #{source_event.last_modified} is not later than #{target_event.updated}"        
       end      
     end
     false
