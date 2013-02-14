@@ -82,7 +82,6 @@ module FacebookGoogleCalendarSync
 
   class GoogleCalendarClient
 
-
     def initialize
       oauth_yaml = YAML.load_file(Pathname.new(ENV['HOME']) + '.google-api.yaml')
       @client = Google::APIClient.new({:application_name => "Facebook to Google Calendar Sync", :application_version => "0.1.0"})
@@ -101,7 +100,8 @@ module FacebookGoogleCalendarSync
 
     def find_calendar_details_by_name calendar_name
       result = @client.execute(:api_method => @calendar_service.calendar_list.list)
-      result.data.items.find { | calendar | calendar.summary == calendar_name}
+      calendar = result.data.items.find { | calendar | calendar.summary == calendar_name}
+      raise SyncException.new("Could not find calendar with name #{calendar_name}") if calendar == nil
     end
 
     def get_calendar calendar_id
