@@ -1,3 +1,5 @@
+#LOCATION!!!!
+
 require 'rubygems'
 require 'google/api_client'
 require 'yaml'
@@ -27,7 +29,8 @@ module FacebookGoogleCalendarSync
            'start' => date_hash(ical_event.dtstart),
            'end' => date_hash(ical_event.dtend),
            'iCalUID' => ical_event.uid,
-           'description' => ical_event.description
+           'description' => ical_event.description,
+           'location' => ical_event.location
         }
      end
 
@@ -90,7 +93,7 @@ module FacebookGoogleCalendarSync
         @@client.add_event id, source_event_hash      
         return true
       else            
-        if source_event.last_modified.to_time > target_event.updated || source_event.summary == 'Ladies Brunch'
+        if source_event.last_modified.to_time > target_event.updated || source_event.summary == 'Ladies Brunch' || true
           logger.info "Updating #{source_event.summary} in #{@details.summary}"
           @@client.update_event id, target_event.id, target_event.to_hash.merge(source_event_hash)        
         else
