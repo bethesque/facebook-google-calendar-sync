@@ -8,7 +8,9 @@ require 'logger'
 require 'active_support/core_ext/hash/indifferent_access'
 
 
-module FacebookGoogleCalendarSync  
+module FacebookGoogleCalendarSync
+
+  CONFIG_DIR = Pathname.new(ENV['HOME']) + '.facebook-google-calendar-sync'  
 
   module Logging
     require 'logger'
@@ -105,7 +107,7 @@ module FacebookGoogleCalendarSync
   class GoogleCalendarClient
 
     def initialize
-      oauth_yaml = YAML.load_file(Pathname.new(ENV['HOME']) + '.google-api.yaml')
+      oauth_yaml = YAML.load_file(CONFIG_DIR + 'google-api.yaml')
       @client = Google::APIClient.new({:application_name => "Facebook to Google Calendar Sync", :application_version => "0.1.0"})
       @client.authorization.client_id = oauth_yaml["client_id"]
       @client.authorization.client_secret = oauth_yaml["client_secret"]
@@ -182,7 +184,7 @@ module FacebookGoogleCalendarSync
 end
 
 
-config = YAML.load_file(Pathname.new(ENV['HOME']) + '.facebook-google-calendar-sync' + 'config.yml').with_indifferent_access
+config = YAML.load_file(FacebookGoogleCalendarSync::CONFIG_DIR + 'config.yml').with_indifferent_access
 FacebookGoogleCalendarSync.sync config
 
 
