@@ -1,7 +1,3 @@
-#API access - https://code.google.com/apis/console/b/0/?pli=1#project:380955492060:access
-#Configure your app - https://developers.google.com/google-apps/calendar/instantiate
-#Calendar sample - http://code.google.com/p/google-api-ruby-client/source/browse/calendar/calendar.rb?repo=samples
-
 require 'rubygems'
 require 'google/api_client'
 require 'yaml'
@@ -23,14 +19,38 @@ module FacebookGoogleCalendarSync
     end
   end
 
+  module EventToHash
+
+     def convert_event_to_hash ical_event
+        {
+           'summary' => ical_event.summary,
+           'start' => date_hash(ical_event.dtstart),
+           'end' => date_hash(ical_event.dtend),
+           'iCalUID' => ical_event.uid,
+           'description' => ical_event.description
+        }
+     end
+
+     private
+
+     def date_hash date_time
+        if date_time.instance_of? Date
+          {'date' => date_time.strftime('%Y-%m-%d')}
+        else
+          {'dateTime' => date_time.strftime('%Y-%m-%dT%H:%M:%S.000%:z')}
+        end
+     end
+
+  end   
+
   class GoogleCalendar
 
-    include FacebookGoogleCalendarSync::Logging
+    include Logging
+    include EventToHash
 
     def initialize details, data    
       @details = details
       @data = data
-      #@log = Logger.new(STDOUT)
     end
 
     def self.set_client client
@@ -39,6 +59,7 @@ module FacebookGoogleCalendarSync
 
     def self.find_calendar_by_name calendar_name
       target_calendar_details = @@client.find_calendar_details_by_name calendar_name
+      return nil if target_calendar_details == nil
       calendar = @@client.get_calendar target_calendar_details.id
       GoogleCalendar.new(target_calendar_details, calendar)
     end
@@ -56,14 +77,14 @@ module FacebookGoogleCalendarSync
     end
 
     def has_matching_target_event source_event
-      find_event_by_uid source_event.uid != nil
+      find_event_by_uid(source_event.uid) != nil
     end
 
     #returns true if the source_event was newly added, 
     #false if a matching target_event already existed and was updated
     def add_or_update_event source_event
       target_event = find_event_by_uid source_event.uid
-      source_event_hash = ICalToGoogleCalendarConverter.convert(source_event)    
+      source_event_hash = convert_event_to_hash(source_event)    
       if target_event == nil
         logger.info "Adding #{source_event.summary} to #{@details.summary}"
         @@client.add_event id, source_event_hash      
@@ -100,8 +121,7 @@ module FacebookGoogleCalendarSync
 
     def find_calendar_details_by_name calendar_name
       result = @client.execute(:api_method => @calendar_service.calendar_list.list)
-      calendar = result.data.items.find { | calendar | calendar.summary == calendar_name}
-      raise SyncException.new("Could not find calendar with name #{calendar_name}") if calendar == nil
+      result.data.items.find { | calendar | calendar.summary == calendar_name}      
     end
 
     def get_calendar calendar_id
@@ -131,37 +151,14 @@ module FacebookGoogleCalendarSync
       result.data
     end
 
-     private
+    private
 
-     def check_for_success result
-        raise SyncException.new(result.status.to_s + " " + result.body) unless result.status == 200
-     end
+    def check_for_success result
+      raise SyncException.new(result.status.to_s + " " + result.body) unless result.status == 200
+    end
 
   end
-
-  class ICalToGoogleCalendarConverter
-
-     def self.convert ical_event
-        {
-           'summary' => ical_event.summary,
-           'start' => date_hash(ical_event.dtstart),
-           'end' => date_hash(ical_event.dtend),
-           'iCalUID' => ical_event.uid,
-           'description' => ical_event.description
-        }
-     end
-
-     private
-
-     def self.date_hash date_time
-        if date_time.instance_of? Date
-          {'date' => date_time.strftime('%Y-%m-%d')}
-        else
-          {'dateTime' => date_time.strftime('%Y-%m-%dT%H:%M:%S.000%:z')}
-        end
-     end
-
-  end  
+   
 
   class SyncException < StandardError
   end
