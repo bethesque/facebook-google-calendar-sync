@@ -133,9 +133,9 @@ module FacebookGoogleCalendarSync
 
     def add_event calendar_id, event
       result = @client.execute(:api_method => @calendar_service.events.insert,
-         :parameters => {'calendarId' => calendar_id},
-         :body_object => event,
-         :headers => {'Content-Type' => 'application/json'}
+        :parameters => {'calendarId' => calendar_id},
+        :body_object => event,
+        :headers => {'Content-Type' => 'application/json'}
       )
       check_for_success result
       result.data
@@ -143,9 +143,9 @@ module FacebookGoogleCalendarSync
 
     def update_event calendar_id, event_id, event
       result = @client.execute(:api_method => @calendar_service.events.update,
-         :parameters => {'calendarId' => calendar_id, 'eventId' => event_id},
-         :body_object => event,
-         :headers => {'Content-Type' => 'application/json'}
+        :parameters => {'calendarId' => calendar_id, 'eventId' => event_id},
+        :body_object => event,
+        :headers => {'Content-Type' => 'application/json'}
       )
       check_for_success result
       result.data
