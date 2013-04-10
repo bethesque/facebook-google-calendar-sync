@@ -1,6 +1,19 @@
-# Facebook::Google::Calendar::Sync
+# FacebookGoogleCalendarSync
 
-TODO: Write a gem description
+Sync Facebook Events Calendar to Google Calendar. 
+
+For Facebook and Google Calendar users
+Who want to be super organised and not miss out on events or double book themselves
+FacebookGoogleCalendarSync
+Is a gem
+That imports Facebook events into Google Calendar.
+Unlike the existing "import the iCal URL provided by Facebook" solution
+This gem allows the user to delete events that they are not interested in without going to Facebook to click "Not going",
+while also allowing synchronisation to be reliably and regularly scheduled and manually triggered.
+
+It uses two calendars - one which is the calendar you will want to display and delete events from, and another "master list" which you will want to be hidden, which is used to work out if an event is not in your display calender because you 1. deleted it or 2. it is a new event that needs to be added.
+
+TODO: work out a way using the event created date to eliminate the dependency on the master list calendar.
 
 ## Installation
 
@@ -18,7 +31,20 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Register the project with Google according to the https://developers.google.com/google-apps/calendar/firstapp#register
+Select "Google calendar" in the services.
+When filling in the API Access details, this is an "Installed application" of type "Other".
+Create your .google-api.yml file according to https://developers.google.com/google-apps/calendar/instantiate
+
+Create a calender in your Google Calendar account, eg "My Facebook Events". This is the one you will be able to delete events from.
+Create another calender in your Google Calendar account, eg "All Facebook Events". This is the master list. You will probably want this to be hidden, so you don't see duplicate events.
+
+Copy your Google API yaml file to ~/.google-api.yaml
+Make a copy of examples/config.yml with your own calendar names and Facebook iCal URL
+
+To run:
+
+bundle exec facebook-google-calendar-sync
 
 ## Contributing
 

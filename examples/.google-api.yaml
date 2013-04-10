@@ -1,0 +1,7 @@
+---
+mechanism: oauth_2
+scope: https://www.googleapis.com/auth/calendar
+client_id: <YOUR CLIENT ID>
+client_secret: <YOUR SECRET>
+access_token: <YOUR ACCESS TOKEN>
+refresh_token: <YOUR REFRESH TOKEN>
