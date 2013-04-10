@@ -44,6 +44,7 @@ To run:
 bundle exec facebook-google-calendar-sync
 
 Hide the "all_events_calendar_name" calendar so you don't see duplicate events.
+TODO: work out how to programmatically hide this, or come up with an alternate design that doesn't need the master list calendar.
 
 ## Contributing
 
