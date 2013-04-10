@@ -15,6 +15,7 @@ module FacebookGoogleCalendarSync
   module Logging
     require 'logger'
     @@logger = Logger.new(STDOUT)
+    @@logger.level = Logger::DEBUG
 
     def logger
       @@logger
@@ -32,6 +33,14 @@ module FacebookGoogleCalendarSync
            'description' => ical_event.description,
            'location' => ical_event.location
         }
+     end
+
+     def convert_google_event_to_hash google_event
+      {
+        'summary' => google_event.summary,
+        'updated' => google_event.updated,
+        'i_cal_uid' => google_event.i_cal_uid
+      }
      end
 
      private
@@ -87,6 +96,7 @@ module FacebookGoogleCalendarSync
     #false if a matching target_event already existed and was updated
     def add_or_update_event source_event
       target_event = find_event_by_uid source_event.uid
+      logger.debug "Target event #{convert_google_event_to_hash(target_event)}"
       source_event_hash = convert_event_to_hash(source_event)    
       if target_event == nil
         logger.info "Adding #{source_event.summary} to #{@details.summary}"
