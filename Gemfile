@@ -1,6 +1,4 @@
-
 source 'https://rubygems.org'
 
-gem 'google-api-client'
-gem 'ri_cal'
-gem 'activesupport'
+# Specify your gem's dependencies in facebook-google-calendar-sync.gemspec
+gemspec
