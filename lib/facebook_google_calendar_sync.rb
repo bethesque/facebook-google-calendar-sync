@@ -166,7 +166,10 @@ module FacebookGoogleCalendarSync
   class SyncException < StandardError
   end
 
+  extend Logging
+
   def self.sync config
+    logger.info "Starting"
     source_calendar = open(config[:source_calendar_url]) { | response | components = RiCal.parse(response) }.first
     google_calendar_client = GoogleCalendarClient.new
     GoogleCalendar.set_client google_calendar_client
@@ -174,9 +177,13 @@ module FacebookGoogleCalendarSync
     all_events_calendar = GoogleCalendar.find_calendar_by_name config[:all_events_calendar_name]
 
     source_calendar.events.each do | source_event |
-      is_new_event = all_events_calendar.add_or_update_event source_event
-      if is_new_event || my_events_calendar.has_matching_target_event(source_event)
-        my_events_calendar.add_or_update_event source_event
+      begin
+        is_new_event = all_events_calendar.add_or_update_event source_event
+        if is_new_event || my_events_calendar.has_matching_target_event(source_event)
+          my_events_calendar.add_or_update_event source_event
+        end
+      rescue StandardError => e
+        logger.error e
       end
     end    
   end
