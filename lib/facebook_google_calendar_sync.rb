@@ -36,6 +36,7 @@ module FacebookGoogleCalendarSync
      end
 
      def convert_google_event_to_hash google_event
+      return nil unless google_event
       {
         'summary' => google_event.summary,
         'updated' => google_event.updated,
@@ -163,6 +164,12 @@ module FacebookGoogleCalendarSync
       check_for_success result
       result.data
     end
+
+    # def create_calendar summary, timezone
+    #   result = @client.execute(:api_method => @calendar_service.calendar.insert,
+    #     :parameters => {},
+    #     )
+    # end
 
     private
 
