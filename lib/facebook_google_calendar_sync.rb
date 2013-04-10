@@ -70,6 +70,20 @@ module FacebookGoogleCalendarSync
       @@client = client
     end
 
+    def self.find_or_create_calendar_by_name calendar_name
+      target_calendar_details = @@client.find_calendar_details_by_name calendar_name
+      if target_calendar_details == nil
+        puts "Creating calendar #{calendar_name}"
+        @@client.create_calendar calendar_name
+        target_calendar_details = @@client.find_calendar_details_by_name calendar_name
+      else
+        puts "Found existing calendar #{calendar_name}"
+      end
+      
+      calendar = @@client.get_calendar target_calendar_details.id
+      GoogleCalendar.new(target_calendar_details, calendar)
+    end
+
     def self.find_calendar_by_name calendar_name
       target_calendar_details = @@client.find_calendar_details_by_name calendar_name
       return nil if target_calendar_details == nil
@@ -165,11 +179,15 @@ module FacebookGoogleCalendarSync
       result.data
     end
 
-    # def create_calendar summary, timezone
-    #   result = @client.execute(:api_method => @calendar_service.calendar.insert,
-    #     :parameters => {},
-    #     )
-    # end
+    def create_calendar summary, timezone = 'Australia/Melbourne'
+      result = @client.execute(:api_method => @calendar_service.calendars.insert,
+        :parameters => {},
+        :body_object => {'summary' => summary, 'timeZone' => timezone},
+        :headers => {'Content-Type' => 'application/json'}
+      )
+      check_for_success result
+      result.data
+    end
 
     private
 
@@ -189,9 +207,11 @@ module FacebookGoogleCalendarSync
     logger.info "Starting"
     source_calendar = open(config[:source_calendar_url]) { | response | components = RiCal.parse(response) }.first
     google_calendar_client = GoogleCalendarClient.new
+
     GoogleCalendar.set_client google_calendar_client
-    my_events_calendar = GoogleCalendar.find_calendar_by_name config[:my_events_calendar_name]
-    all_events_calendar = GoogleCalendar.find_calendar_by_name config[:all_events_calendar_name]
+    my_events_calendar = GoogleCalendar.find_or_create_calendar_by_name config[:my_events_calendar_name]
+
+    all_events_calendar = GoogleCalendar.find_or_create_calendar_by_name config[:all_events_calendar_name]
 
     source_calendar.events.each do | source_event |
       begin
