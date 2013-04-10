@@ -15,7 +15,7 @@ module FacebookGoogleCalendarSync
   module Logging
     require 'logger'
     @@logger = Logger.new(STDOUT)
-    @@logger.level = Logger::DEBUG
+    @@logger.level = Logger::INFO
 
     def logger
       @@logger
