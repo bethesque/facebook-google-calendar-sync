@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require 'facebook_google_calendar_sync/cli'
+
+FacebookGoogleCalendarSync::CLI.start
