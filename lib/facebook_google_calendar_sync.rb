@@ -71,22 +71,15 @@ module FacebookGoogleCalendarSync
       @@client = client
     end
 
-    def self.find_or_create_calendar_by_name calendar_name
-      target_calendar_details = @@client.find_calendar_details_by_name calendar_name
+    def self.find_or_create_calendar calendar_details
+      target_calendar_details = @@client.find_calendar_details_by_summary calendar_details['summary']
       if target_calendar_details == nil
-        logger.info "Creating calendar #{calendar_name}"
-        target_calendar_details = @@client.create_calendar calendar_name
+        logger.info "Creating calendar #{calendar_details['summary']} with timezone #{calendar_details['timeZone']}"
+        target_calendar_details = @@client.create_calendar calendar_details
       else
-        logger.info "Found existing calendar #{calendar_name}"
+        logger.info "Found existing calendar #{calendar_details['summary']}"
       end
       
-      calendar = @@client.get_calendar target_calendar_details.id
-      GoogleCalendar.new(target_calendar_details, calendar)
-    end
-
-    def self.find_calendar_by_name calendar_name
-      target_calendar_details = @@client.find_calendar_details_by_name calendar_name
-      return nil if target_calendar_details == nil
       calendar = @@client.get_calendar target_calendar_details.id
       GoogleCalendar.new(target_calendar_details, calendar)
     end
@@ -147,9 +140,9 @@ module FacebookGoogleCalendarSync
       @calendar_service = @client.discovered_api('calendar', 'v3')
     end
 
-    def find_calendar_details_by_name calendar_name
+    def find_calendar_details_by_summary calendar_name
       result = @client.execute(:api_method => @calendar_service.calendar_list.list)
-      result.data.items.find { | calendar | calendar.summary == calendar_name}      
+      result.data.items.find { | calendar | calendar.summary == calendar_name && calendar.accessRole == 'owner'}      
     end
 
     def get_calendar calendar_id
@@ -179,10 +172,10 @@ module FacebookGoogleCalendarSync
       result.data
     end
 
-    def create_calendar summary, timezone = 'Australia/Melbourne'
+    def create_calendar calendar_details
       result = @client.execute(:api_method => @calendar_service.calendars.insert,
         :parameters => {},
-        :body_object => {'summary' => summary, 'timeZone' => timezone},
+        :body_object => calendar_details,
         :headers => {'Content-Type' => 'application/json'}
       )
       check_for_success result
@@ -204,14 +197,12 @@ module FacebookGoogleCalendarSync
   extend Logging
 
   def self.sync config
-    logger.info "Starting"
     source_calendar = open(config[:source_calendar_url]) { | response | components = RiCal.parse(response) }.first
     google_calendar_client = GoogleCalendarClient.new
 
     GoogleCalendar.set_client google_calendar_client
-    my_events_calendar = GoogleCalendar.find_or_create_calendar_by_name config[:my_events_calendar_name]
-
-    all_events_calendar = GoogleCalendar.find_or_create_calendar_by_name config[:all_events_calendar_name]
+    my_events_calendar = GoogleCalendar.find_or_create_calendar 'summary' => config[:my_events_calendar_name], 'timeZone' => config[:timezone]
+    all_events_calendar = GoogleCalendar.find_or_create_calendar 'summary' => config[:all_events_calendar_name], 'timeZone' => config[:timezone]
 
     source_calendar.events.each do | source_event |
       begin

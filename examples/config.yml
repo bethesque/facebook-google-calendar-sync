@@ -1,3 +1,4 @@
 my_events_calendar_name : My Facebook Events
 all_events_calendar_name : All Facebook Events
+timezone: Australia/Melbourne
 source_calendar_url : http://www.facebook.com/ical/u.php?uid=SOME_UID&key=SOME_KEY

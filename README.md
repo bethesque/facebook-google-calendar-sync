@@ -36,15 +36,14 @@ Select "Google calendar" in the services.
 When filling in the API Access details, this is an "Installed application" of type "Other".
 Create your .google-api.yml file according to https://developers.google.com/google-apps/calendar/instantiate
 
-Create a calender in your Google Calendar account, eg "My Facebook Events". This is the one you will be able to delete events from.
-Create another calender in your Google Calendar account, eg "All Facebook Events". This is the master list. You will probably want this to be hidden, so you don't see duplicate events.
-
 Copy your Google API yaml file to ~/.google-api.yaml
 Make a copy of examples/config.yml with your own calendar names and Facebook iCal URL
 
 To run:
 
 bundle exec facebook-google-calendar-sync
+
+Hide the "all_events_calendar_name" calendar so you don't see duplicate events.
 
 ## Contributing
 
