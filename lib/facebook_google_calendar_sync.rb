@@ -59,6 +59,7 @@ module FacebookGoogleCalendarSync
   class GoogleCalendar
 
     include Logging
+    extend Logging
     include EventToHash
 
     def initialize details, data    
@@ -73,11 +74,10 @@ module FacebookGoogleCalendarSync
     def self.find_or_create_calendar_by_name calendar_name
       target_calendar_details = @@client.find_calendar_details_by_name calendar_name
       if target_calendar_details == nil
-        puts "Creating calendar #{calendar_name}"
-        @@client.create_calendar calendar_name
-        target_calendar_details = @@client.find_calendar_details_by_name calendar_name
+        logger.info "Creating calendar #{calendar_name}"
+        target_calendar_details = @@client.create_calendar calendar_name
       else
-        puts "Found existing calendar #{calendar_name}"
+        logger.info "Found existing calendar #{calendar_name}"
       end
       
       calendar = @@client.get_calendar target_calendar_details.id
