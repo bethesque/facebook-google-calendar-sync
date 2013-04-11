@@ -28,14 +28,8 @@ end
       @@calendar_service = @@client.discovered_api('calendar', 'v3')
     end
 
-    def find_calendar_details_by_summary calendar_name      
-      get_calendar_list.items.find { | calendar | calendar.summary == calendar_name && calendar.accessRole == 'owner'}      
-    end
-
-    def make_call params
-      result = client.execute(params.merge(:headers => {'Content-Type' => 'application/json'}))
-      check_for_success result
-      result.data
+    def find_calendar_details_by_summary calendar_summary
+      get_calendar_list.items.find { | calendar | calendar.summary == calendar_summary && calendar.accessRole == 'owner'}      
     end
 
     def get_calendar_list
@@ -71,6 +65,12 @@ end
     end
 
     private
+
+    def make_call params
+      result = client.execute(params.merge(:headers => {'Content-Type' => 'application/json'}))
+      check_for_success result
+      result.data
+    end    
 
     def client
       @@client
