@@ -1,5 +1,6 @@
 require 'facebook_google_calendar_sync/event'
 require 'facebook_google_calendar_sync/google_calendar_client'
+require 'time_zone_hack'
 
 module FacebookGoogleCalendarSync    
 
@@ -11,7 +12,10 @@ module FacebookGoogleCalendarSync
     include GoogleCalendarClient
     extend GoogleCalendarClient
 
-    def initialize details, data    
+    DESCRIPTION_PREFIX = "Last synchronised with Facebook: "
+    DESCRIPTION_SUFFIX = "\nTo ensure calendar synchronises properly, please do not modify this description."
+
+    def initialize details, data
       @details = details
       @data = data      
     end
@@ -35,11 +39,13 @@ module FacebookGoogleCalendarSync
     end
 
     def last_modified
-      DateTime.strptime(description) rescue DateTime.new(0)
+      puts description[33..58]
+      DateTime.strptime(description[DESCRIPTION_PREFIX.size..58]) rescue DateTime.new(0)
     end
 
     def last_modified= date_time
-      self.description = date_time.to_s
+      desc = "#{DESCRIPTION_PREFIX}#{date_time.to_s}#{DESCRIPTION_SUFFIX}"
+      self.description = desc
     end
 
     def description
@@ -52,6 +58,10 @@ module FacebookGoogleCalendarSync
 
     def events
       @data.items
+    end
+
+    def timezone
+      @details.timeZone
     end
 
     def find_event_by_uid uid
@@ -83,8 +93,8 @@ module FacebookGoogleCalendarSync
       update_last_modified! facebook_events
     end
 
-    def update_last_modified! facebook_events
-      self.last_modified = date_of_most_recent_update facebook_events
+    def update_last_modified! facebook_events      
+      self.last_modified = date_of_most_recent_update(facebook_events).convert_time_zone(timezone)
       self.save_details!
     end
 

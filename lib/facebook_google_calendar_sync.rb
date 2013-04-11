@@ -4,7 +4,7 @@ require 'ri_cal'
 require 'facebook_google_calendar_sync/logging'
 require 'facebook_google_calendar_sync/google_calendar'
 require 'facebook_google_calendar_sync/google_calendar_client'
-require 'time_hack'
+require 'time_zone_hack'
 require 'active_support/core_ext/hash/indifferent_access'
 
 module FacebookGoogleCalendarSync    

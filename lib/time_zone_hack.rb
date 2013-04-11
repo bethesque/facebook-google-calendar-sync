@@ -9,3 +9,9 @@ class Time
     return to_zone_time
   end
 end
+
+class DateTime
+  def convert_time_zone(to_zone)
+    self.to_time.convert_time_zone(to_zone).to_datetime
+  end
+end
