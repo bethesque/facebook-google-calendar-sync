@@ -1,4 +1,12 @@
 #!/usr/bin/env ruby
 require 'facebook_google_calendar_sync/cli'
+#require 'vcr'
 
-FacebookGoogleCalendarSync::CLI.start
+# VCR.configure do |c|
+#   c.cassette_library_dir = 'data/casettes'
+#   c.hook_into :fakeweb  
+# end
+
+#VCR.use_cassette('test') do
+  FacebookGoogleCalendarSync::CLI.start
+#end

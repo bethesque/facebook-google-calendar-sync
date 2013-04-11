@@ -7,7 +7,7 @@ module FacebookGoogleCalendarSync
   class CLI
     def self.start
       config = YAML.load_file(Pathname.new(ENV['HOME']) + '.facebook-google-calendar-sync' + 'config.yml').with_indifferent_access
-      FacebookGoogleCalendarSync.sync config      
+      FacebookGoogleCalendarSync.sync config
     end
   end
 end

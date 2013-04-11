@@ -11,9 +11,6 @@ Unlike the existing "import the iCal URL provided by Facebook" solution
 This gem allows the user to delete events that they are not interested in without going to Facebook to click "Not going",
 while also allowing synchronisation to be reliably and regularly scheduled and manually triggered.
 
-It uses two calendars - one which is the calendar you will want to display and delete events from, and another "master list" which you will want to be hidden, which is used to work out if an event is not in your display calender because you 1. deleted it or 2. it is a new event that needs to be added.
-
-TODO: work out a way using the event created date to eliminate the dependency on the master list calendar.
 
 ## Installation
 

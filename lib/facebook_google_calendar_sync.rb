@@ -8,6 +8,19 @@ require 'open-uri'
 require 'ri_cal'
 require 'logger'
 require 'active_support/core_ext/hash/indifferent_access'
+require 'date'
+
+class Time
+  #Useful but not thread safe!!!!
+  def convert_time_zone(to_zone)
+    original_zone = ENV["TZ"]
+    utc_time = dup.gmtime
+    ENV["TZ"] = to_zone
+    to_zone_time = utc_time.localtime
+    ENV["TZ"] = original_zone
+    return to_zone_time
+  end
+end
 
 
 module FacebookGoogleCalendarSync  
@@ -22,7 +35,7 @@ module FacebookGoogleCalendarSync
     end
   end
 
-  module EventToHash
+  module Event
 
      def convert_event_to_hash ical_event
         {
@@ -44,6 +57,10 @@ module FacebookGoogleCalendarSync
       }
      end
 
+    def merge_events target_event, source_event
+      target_event.to_hash.merge(convert_event_to_hash(source_event))
+    end     
+
      private
 
      def date_hash date_time
@@ -60,32 +77,45 @@ module FacebookGoogleCalendarSync
 
     include Logging
     extend Logging
-    include EventToHash
+    include Event
 
     def initialize details, data    
       @details = details
-      @data = data
+      @data = data      
     end
 
     def self.set_client client
       @@client = client
     end
 
-    def self.find_or_create_calendar calendar_details
-      target_calendar_details = @@client.find_calendar_details_by_summary calendar_details['summary']
-      if target_calendar_details == nil
-        logger.info "Creating calendar #{calendar_details['summary']} with timezone #{calendar_details['timeZone']}"
-        target_calendar_details = @@client.create_calendar calendar_details
-      else
-        logger.info "Found existing calendar #{calendar_details['summary']}"
-      end
-      
+    def self.find_or_create_calendar calendar_details      
+      target_calendar_details = find_or_create_calendar_details calendar_details
       calendar = @@client.get_calendar target_calendar_details.id
       GoogleCalendar.new(target_calendar_details, calendar)
     end
 
     def id
       @details.id
+    end
+
+    def summary
+      @details.summary
+    end
+
+    def last_modified
+      DateTime.strptime(description) rescue DateTime.new(0)
+    end
+
+    def last_modified= date_time
+      self.description = date_time.to_s
+    end
+
+    def description
+      @details.description
+    end
+
+    def description= desc      
+      @details.description = desc      
     end
 
     def events
@@ -96,30 +126,76 @@ module FacebookGoogleCalendarSync
       events.find{ | event | event.i_cal_uid == uid }
     end
 
-    def has_matching_target_event source_event
-      find_event_by_uid(source_event.uid) != nil
+    def save_details!      
+      @@client.update_calendar id, @details
     end
 
-    #returns true if the source_event was newly added, 
-    #false if a matching target_event already existed and was updated
-    def add_or_update_event source_event
-      target_event = find_event_by_uid source_event.uid
-      logger.debug "Target event #{convert_google_event_to_hash(target_event)}"
-      source_event_hash = convert_event_to_hash(source_event)    
-      if target_event == nil
-        logger.info "Adding #{source_event.summary} to #{@details.summary}"
-        @@client.add_event id, source_event_hash      
-        return true
-      else            
-        if source_event.last_modified.to_time > target_event.updated || source_event.summary == 'Ladies Brunch'
-          logger.info "Updating #{source_event.summary} in #{@details.summary}"
-          @@client.update_event id, target_event.id, target_event.to_hash.merge(source_event_hash)        
-        else
-          logger.info "Not updating #{source_event.summary} in #{@details.summary} as #{source_event.last_modified} is not later than #{target_event.updated}"        
-        end      
-      end
-      false
+    def event_updated_since_calendar_last_modified source_event
+      source_event.last_modified > last_modified
     end
+
+    def event_created_since_calendar_last_modified source_event
+      source_event.created > last_modified
+    end
+
+    def synchronise_events source_events
+      source_events.each do | source_event |
+        begin          
+          synchronise_event source_event        
+        rescue StandardError => e
+          logger.error e
+          logger.error "Error synchronising event. Please note that if this was a new event, it will not have been added to your calendar."
+          logger.error convert_event_to_hash(source_event)
+        end
+      end
+      update_last_modified! source_events
+    end
+
+    def update_last_modified! source_events
+      most_recently_modified_event = source_events.max{ | event_a, event_b | event_a.last_modified <=> event_b.last_modified }
+      self.last_modified = most_recently_modified_event.last_modified
+      self.save_details!
+    end
+
+    def synchronise_event source_event
+      target_event = find_event_by_uid source_event.uid      
+      if target_event == nil
+        handle_no_target_event source_event
+      else
+        handle_found_target_event source_event, target_event
+      end
+    end
+
+    private
+
+    def handle_no_target_event source_event
+      if event_created_since_calendar_last_modified source_event
+        logger.info "Adding '#{source_event.summary}' to #{@details.summary}"
+        @@client.add_event id, convert_event_to_hash(source_event)
+      else
+        logger.info "Not updating '#{source_event.summary}' as it has been deleted from the target calendar since #{last_modified}."
+      end
+    end
+
+    def handle_found_target_event source_event, target_event
+      if event_updated_since_calendar_last_modified source_event
+        logger.info "Updating '#{source_event.summary}' in #{@details.summary}"
+        @@client.update_event id, target_event.id, merge_events(target_event, source_event)        
+      else
+        logger.info "Not updating '#{source_event.summary}' in #{@details.summary} as #{source_event.last_modified.to_time} is not later than #{target_event.updated.convert_time_zone('Australia/Melbourne')}"                  
+      end              
+    end
+
+    def self.find_or_create_calendar_details calendar_details
+      target_calendar_details = @@client.find_calendar_details_by_summary calendar_details['summary']
+      if target_calendar_details == nil
+        logger.info "Creating calendar #{calendar_details['summary']} with timezone #{calendar_details['timeZone']}"
+        target_calendar_details = @@client.create_calendar calendar_details
+      else
+        logger.info "Found existing calendar #{calendar_details['summary']}"
+      end
+      target_calendar_details
+    end    
   end
 
   class GoogleCalendarClient
@@ -182,6 +258,16 @@ module FacebookGoogleCalendarSync
       result.data
     end
 
+    def update_calendar calendar_id, calendar_details
+      result = @client.execute(:api_method => @calendar_service.calendars.update,
+        :parameters => {'calendarId' => calendar_id},
+        :body_object => calendar_details,
+        :headers => {'Content-Type' => 'application/json'}
+      )
+      check_for_success result
+      result.data
+    end
+
     private
 
     def check_for_success result
@@ -197,30 +283,20 @@ module FacebookGoogleCalendarSync
   extend Logging
 
   def self.sync config
-    source_calendar = open(config[:source_calendar_url]) { | response | components = RiCal.parse(response) }.first
-    google_calendar_client = GoogleCalendarClient.new
-
-    GoogleCalendar.set_client google_calendar_client
+    source_calendar = retrieve_source_calendar config[:source_calendar_url]
+    GoogleCalendar.set_client GoogleCalendarClient.new
     my_events_calendar = GoogleCalendar.find_or_create_calendar 'summary' => config[:my_events_calendar_name], 'timeZone' => config[:timezone]
-    all_events_calendar = GoogleCalendar.find_or_create_calendar 'summary' => config[:all_events_calendar_name], 'timeZone' => config[:timezone]
+    logger.info "#{my_events_calendar.summary} last modified at #{my_events_calendar.last_modified.to_time}"
+    my_events_calendar.synchronise_events source_calendar.events    
+  end
 
-    source_calendar.events.each do | source_event |
-      begin
-        is_new_event = all_events_calendar.add_or_update_event source_event
-        if is_new_event || my_events_calendar.has_matching_target_event(source_event)
-          my_events_calendar.add_or_update_event source_event
-        end
-      rescue StandardError => e
-        logger.error e
-      end
-    end    
+  private
+
+  def self.retrieve_source_calendar url
+    open(url) { | response | components = RiCal.parse(response) }.first
   end
 
 end
-
-
-# config = YAML.load_file(Pathname.new(ENV['HOME']) + '.facebook-google-calendar-sync' + 'config.yml').with_indifferent_access
-# FacebookGoogleCalendarSync.sync config
 
 
 
