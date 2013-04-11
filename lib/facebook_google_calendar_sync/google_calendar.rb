@@ -38,8 +38,7 @@ module FacebookGoogleCalendarSync
       @details.summary
     end
 
-    def last_modified
-      puts description[33..58]
+    def last_modified      
       DateTime.strptime(description[DESCRIPTION_PREFIX.size..58]) rescue DateTime.new(0)
     end
 

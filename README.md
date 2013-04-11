@@ -34,14 +34,11 @@ When filling in the API Access details, this is an "Installed application" of ty
 Create your .google-api.yml file according to https://developers.google.com/google-apps/calendar/instantiate
 
 Copy your Google API yaml file to ~/.google-api.yaml
-Make a copy of examples/config.yml with your own calendar names and Facebook iCal URL
 
 To run:
 
-bundle exec facebook-google-calendar-sync
+bundle exec facebook-google-calendar-sync -t "Australia/Melbourne" -f "http://www.facebook.com/ical/u.php?uid=12345&key=67890"
 
-Hide the "all_events_calendar_name" calendar so you don't see duplicate events.
-TODO: work out how to programmatically hide this, or come up with an alternate design that doesn't need the master list calendar.
 
 ## Contributing
 

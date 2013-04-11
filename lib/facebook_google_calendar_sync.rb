@@ -11,7 +11,7 @@ module FacebookGoogleCalendarSync
 
   extend Logging
   
-  DEFAULT_CONFIG = {:google_api_config_file => Pathname.new(ENV['HOME']) + '.google-api.yaml'}
+  DEFAULT_CONFIG = {:google_api_config_file => Pathname.new(ENV['HOME']) + '.google-api.yaml', :my_events_calendar_name => "My Facebook Events"}
 
   def self.sync config    
     config = DEFAULT_CONFIG.merge(config).with_indifferent_access    
