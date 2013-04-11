@@ -24,6 +24,7 @@ And then execute:
     $ bundle
 
 Or install the gem 'specific_install' and install it directly from git:
+
     $ gem install specific_install
     $ gem specific_install -l http://github.com/bethesque/facebook-google-calendar-sync.git
 
