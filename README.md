@@ -48,3 +48,9 @@ bundle exec facebook-google-calendar-sync -t "Australia/Melbourne" -f "http://ww
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## TODO
+
+* Include example cron scripts
+* Change comment to accuratedly label date
+* Work out a less procedural way of updating the calendar - it's very messy and stateful right now
