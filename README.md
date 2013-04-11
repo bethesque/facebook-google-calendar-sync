@@ -8,23 +8,25 @@ FacebookGoogleCalendarSync
 Is a gem
 That imports Facebook events into Google Calendar.
 Unlike the existing "import the iCal URL provided by Facebook" solution
-This gem allows the user to delete events that they are not interested in without going to Facebook to click "Not going",
-while also allowing synchronisation to be reliably and regularly scheduled and manually triggered.
+This gem allows the user to delete events that they are not interested in without going to Facebook to click "Not Going",
+while also allowing synchronisation to be reliably and regularly scheduled using cron or similar.
+It also displays the details of the "private" Facebook events which would otherwise be hidden by Google Calendar.
 
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'facebook-google-calendar-sync'
+    gem 'facebook-google-calendar-sync', :git => 'git@github.com:bethesque/facebook-google-calendar-sync.git'
 
 And then execute:
 
     $ bundle
 
-Or install it yourself as:
+Or install the gem 'specific_install' and install it directly from git:
 
-    $ gem install facebook-google-calendar-sync
+    $ gem install specific_install
+    $ gem specific_install -l http://github.com/bethesque/facebook-google-calendar-sync.git
 
 ## Usage
 
@@ -39,7 +41,6 @@ To run:
 
 bundle exec facebook-google-calendar-sync -t "Australia/Melbourne" -f "http://www.facebook.com/ical/u.php?uid=12345&key=67890"
 
-
 ## Contributing
 
 1. Fork it
@@ -47,3 +48,9 @@ bundle exec facebook-google-calendar-sync -t "Australia/Melbourne" -f "http://ww
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## TODO
+
+* Include example cron scripts
+* Change comment to accuratedly label date
+* Work out a less procedural way of updating the calendar - it's very messy and stateful right now
