@@ -10,7 +10,7 @@ OptionParser.new do |opts|
   opts.banner = "Usage: facebook-google-calendar-sync [options]"
 
   opts.on("-f", "--facebook-calendar-url URL", "Mandatory. Your Facebook iCalendar URL. eg. \"http://www.facebook.com/ical/u.php?uid=12345&key=67890\" Put the URL in quotes or you may find your process will be backgrounded because of the ampersand.") do | url |
-    options[:source_calendar_url] = url
+    options[:facebook_calendar_url] = url
   end
 
   c_help = "Optional. The location of your Google API YAML file. Defaults to #{options[:google_api_config_file]}"
@@ -18,9 +18,9 @@ OptionParser.new do |opts|
     options[:google_api_config_file] = file
   end
 
-  g_help = "Optional. Google calendar name, defaults to '#{options[:my_events_calendar_name]}'. This calendar will be created if it does not already exist."
+  g_help = "Optional. Google calendar name, defaults to '#{options[:google_calendar_name]}'. This calendar will be created if it does not already exist."
   opts.on("-n", "--google-calendar-name NAME", g_help) do |name|
-    options[:my_events_calendar_name] = name
+    options[:google_calendar_name] = name
   end
 
   opts.on("-t", "--timezone TIMEZONE", "Mandatory if your Google calendar does not already exist, not required if it does. The timezone that you wish your Google calendar to be displayed in.") do | timezone |
