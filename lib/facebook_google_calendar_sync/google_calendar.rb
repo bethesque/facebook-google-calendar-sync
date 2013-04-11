@@ -1,4 +1,5 @@
 require 'facebook_google_calendar_sync/event'
+require 'facebook_google_calendar_sync/google_calendar_client'
 
 module FacebookGoogleCalendarSync    
 
@@ -7,6 +8,8 @@ module FacebookGoogleCalendarSync
     include Logging
     extend Logging
     include Event
+    include GoogleCalendarClient
+    extend GoogleCalendarClient
 
     def initialize details, data    
       @details = details
@@ -19,7 +22,7 @@ module FacebookGoogleCalendarSync
 
     def self.find_or_create_calendar calendar_details      
       target_calendar_details = find_or_create_calendar_details calendar_details
-      calendar = @@client.get_calendar target_calendar_details.id
+      calendar = get_calendar target_calendar_details.id
       GoogleCalendar.new(target_calendar_details, calendar)
     end
 
@@ -56,7 +59,7 @@ module FacebookGoogleCalendarSync
     end
 
     def save_details!      
-      @@client.update_calendar id, @details
+      update_calendar id, @details
     end
 
     def event_updated_since_calendar_last_modified source_event
@@ -100,7 +103,7 @@ module FacebookGoogleCalendarSync
     def handle_no_target_event source_event
       if event_created_since_calendar_last_modified source_event
         logger.info "Adding '#{source_event.summary}' to #{@details.summary}"
-        @@client.add_event id, convert_event_to_hash(source_event)
+        add_event id, convert_event_to_hash(source_event)
       else
         logger.info "Not updating '#{source_event.summary}' as it has been deleted from the target calendar since #{last_modified}."
       end
@@ -109,17 +112,17 @@ module FacebookGoogleCalendarSync
     def handle_found_target_event source_event, target_event
       if event_updated_since_calendar_last_modified source_event
         logger.info "Updating '#{source_event.summary}' in #{@details.summary}"
-        @@client.update_event id, target_event.id, merge_events(target_event, source_event)        
+        update_event id, target_event.id, merge_events(target_event, source_event)        
       else
         logger.info "Not updating '#{source_event.summary}' in #{@details.summary} as #{source_event.last_modified.to_time} is not later than #{target_event.updated.convert_time_zone('Australia/Melbourne')}"                  
       end              
     end
 
-    def self.find_or_create_calendar_details calendar_details
-      target_calendar_details = @@client.find_calendar_details_by_summary calendar_details['summary']
+    def self.find_or_create_calendar_details calendar_details      
+      target_calendar_details = find_calendar_details_by_summary calendar_details['summary']
       if target_calendar_details == nil
         logger.info "Creating calendar #{calendar_details['summary']} with timezone #{calendar_details['timeZone']}"
-        target_calendar_details = @@client.create_calendar calendar_details
+        target_calendar_details = create_calendar calendar_details
       else
         logger.info "Found existing calendar #{calendar_details['summary']}"
       end
