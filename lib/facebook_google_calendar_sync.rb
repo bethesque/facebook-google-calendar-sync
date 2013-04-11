@@ -6,7 +6,7 @@ require 'yaml'
 require 'pathname'
 require 'open-uri'
 require 'ri_cal'
-require 'logger'
+require 'facebook_google_calendar_sync/logging'
 require 'active_support/core_ext/hash/indifferent_access'
 require 'date'
 
@@ -23,18 +23,7 @@ class Time
 end
 
 
-module FacebookGoogleCalendarSync  
-
-  module Logging
-    require 'logger'
-    @@logger = Logger.new(STDOUT)
-    @@logger.level = Logger::INFO
-
-    def logger
-      @@logger
-    end
-  end
-
+module FacebookGoogleCalendarSync    
   module Event
 
      def convert_event_to_hash ical_event
