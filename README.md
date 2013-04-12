@@ -41,6 +41,10 @@ To run:
 
 bundle exec facebook-google-calendar-sync -t "Australia/Melbourne" -f "http://www.facebook.com/ical/u.php?uid=12345&key=67890"
 
+## Known issues
+
+When a Facebook event does not have a location, the time in the iCal export will be up to 2 days ahead of the actual date displayed in Facebook. This behaviour can also be observed in the Android mobile client. This may be because the timezone is incorrectly set when there is no location.
+
 ## Contributing
 
 1. Fork it
@@ -52,5 +56,5 @@ bundle exec facebook-google-calendar-sync -t "Australia/Melbourne" -f "http://ww
 ## TODO
 
 * Include example cron scripts
-* Change comment to accuratedly label date
-* Work out a less procedural way of updating the calendar - it's very messy and stateful right now
+* Change description to accuratedly describe date.
+* Work out if there is a way to fix the event date when there is no location.
