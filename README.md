@@ -53,6 +53,8 @@ bundle exec facebook-google-calendar-sync -t "Australia/Melbourne" -f "http://ww
 
 When a Facebook event does not have a location, the time in the iCal export will be up to 2 days ahead of the actual date displayed in Facebook. This behaviour can also be observed in the Android mobile client. This may be because the timezone is incorrectly set when there is no location.
 
+If a Facebook event has synchronised to your Google calendar then deleted, if the synchronisation process attempts (incorrectly) to add it again, Google Calendar will throw an exception saying that an event with this identifier already exists.
+
 ## Contributing
 
 1. Fork it
