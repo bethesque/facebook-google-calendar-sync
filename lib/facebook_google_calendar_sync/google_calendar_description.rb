@@ -2,7 +2,7 @@ require 'date'
 
 module FacebookGoogleCalendarSync
   module GoogleCalendarDescription
-    DESCRIPTION_PREFIX = "Last Facebook event updated at: "
+    DESCRIPTION_PREFIX = "Last known Facebook event update occurred at: "
     DESCRIPTION_MIDDLE = "\nFacebook last checked at: "
     DESCRIPTION_SUFFIX = "\nTo ensure calendar synchronises properly, please do not modify this description."
 

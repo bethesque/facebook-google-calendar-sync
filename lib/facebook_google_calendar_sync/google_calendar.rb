@@ -29,7 +29,7 @@ module FacebookGoogleCalendarSync
       @details.summary
     end
 
-    def last_modified      
+    def last_known_event_update      
       extract_last_modified_date(description) rescue DateTime.new(0)
     end
 

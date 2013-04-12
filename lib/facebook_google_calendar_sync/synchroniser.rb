@@ -25,7 +25,7 @@ module FacebookGoogleCalendarSync
 
     def synchronise
       synchronise_events
-      update_last_modified
+      update_last_known_event_update
     end
 
     def synchronise_events
@@ -54,7 +54,7 @@ module FacebookGoogleCalendarSync
         logger.info "Adding '#{facebook_event.summary}' to #{google_calendar.summary}"
         add_event google_calendar.id, convert_event_to_hash(facebook_event)
       else
-        logger.info "Not updating '#{facebook_event.summary}' as it has been deleted from the target calendar since #{google_calendar.last_modified}."
+        logger.info "Not updating '#{facebook_event.summary}' as it has been deleted from the target calendar since #{google_calendar.last_known_event_update}."
       end
     end
 
@@ -68,25 +68,25 @@ module FacebookGoogleCalendarSync
     end
 
     def event_updated_since_calendar_last_modified facebook_event
-      facebook_event.last_modified > google_calendar.last_modified
+      facebook_event.last_modified > google_calendar.last_known_event_update
     end
 
     def event_created_since_calendar_last_modified facebook_event
-      facebook_event.created > google_calendar.last_modified
+      facebook_event.created > google_calendar.last_known_event_update
     end
 
     def date_of_most_recent_event_update
       date_of_most_recent_update(facebook_calendar.events).convert_time_zone(google_calendar.timezone)
     end
 
-    def update_last_modified
+    def update_last_known_event_update
       last_modified = date_of_most_recent_event_update
-      if last_modified != google_calendar.last_modified
-        logger.info "Updating description of '#{google_calendar.summary}' to include date of most recent update, #{last_modified}"
+      if last_modified != google_calendar.last_known_event_update
+        logger.info "Updating description of '#{google_calendar.summary}' to include the time of the last known update, #{last_modified}"
         details = google_calendar.details.to_hash.merge({'description' => create_description(date_of_most_recent_event_update)})
         update_calendar google_calendar.id, details
       else
-        logger.info "Not updating description of '#{google_calendar.summary}' as the date of the most recent update has not changed from #{google_calendar.last_modified}."
+        logger.info "Not updating description of '#{google_calendar.summary}' as the date of the most recent update has not changed from #{google_calendar.last_known_event_update}."
       end
     end          
   end
