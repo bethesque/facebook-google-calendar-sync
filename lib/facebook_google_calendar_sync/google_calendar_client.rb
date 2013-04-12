@@ -29,7 +29,11 @@ end
     end
 
     def find_calendar_details_by_summary calendar_summary
-      get_calendar_list.items.find { | calendar | calendar.summary == calendar_summary && calendar.accessRole == 'owner'}      
+      get_calendar_list.items.find { | calendar | puts calendar.to_hash; calendar.summary == calendar_summary && calendar.accessRole == 'owner'}      
+    end
+
+    def find_primary_calendar_details
+      get_calendar_list.items.find { | calendar | calendar.primary }
     end
 
     def get_calendar_list

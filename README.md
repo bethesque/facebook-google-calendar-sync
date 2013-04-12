@@ -3,13 +3,21 @@
 Sync Facebook Events Calendar to Google Calendar. 
 
 For Facebook and Google Calendar users
+
 Who want to be super organised and not miss out on events or double book themselves
+
 FacebookGoogleCalendarSync
+
 Is a gem
+
 That imports Facebook events into Google Calendar.
+
 Unlike the existing "import the iCal URL provided by Facebook" solution
+
 This gem allows the user to delete events that they are not interested in without going to Facebook to click "Not Going",
+
 while also allowing synchronisation to be reliably and regularly scheduled using cron or similar.
+
 It also displays the details of the "private" Facebook events which would otherwise be hidden by Google Calendar.
 
 

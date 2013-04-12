@@ -15,8 +15,8 @@ module FacebookGoogleCalendarSync
       @data = data      
     end
 
-    def self.find_or_create_calendar calendar_details      
-      google_calendar_details = find_or_create_calendar_details calendar_details
+    def self.find_or_create_calendar calendar_name      
+      google_calendar_details = find_or_create_calendar_details calendar_name
       calendar = get_calendar google_calendar_details.id
       GoogleCalendar.new(google_calendar_details, calendar)
     end
@@ -51,13 +51,14 @@ module FacebookGoogleCalendarSync
 
     private
 
-    def self.find_or_create_calendar_details calendar_details      
-      google_calendar_details = find_calendar_details_by_summary calendar_details['summary']
+    def self.find_or_create_calendar_details calendar_name      
+      google_calendar_details = find_calendar_details_by_summary calendar_name
       if google_calendar_details == nil
-        logger.info "Creating Google calendar #{calendar_details['summary']} with timezone #{calendar_details['timeZone']}"
-        google_calendar_details = create_calendar calendar_details
+        timezone = find_primary_calendar_details.timeZone
+        logger.info "Creating Google calendar #{calendar_name} with timezone #{timezone}"
+        google_calendar_details = create_calendar 'summary' => calendar_name, 'timeZone' => timezone
       else
-        logger.info "Found existing Google calendar #{calendar_details['summary']}"
+        logger.info "Found existing Google calendar #{calendar_name}"
       end
       google_calendar_details
     end    

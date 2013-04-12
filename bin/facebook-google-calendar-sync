@@ -14,17 +14,13 @@ OptionParser.new do |opts|
   end
 
   c_help = "Optional. The location of your Google API YAML file. Defaults to #{options[:google_api_config_file]}"
-  opts.on("-c", "--google-api-config-file CONFIG", c_help) do |file|
+  opts.on("-c", "--google-api-config-file CONFIG", c_help) do | file |
     options[:google_api_config_file] = file
   end
 
   g_help = "Optional. Google calendar name, defaults to '#{options[:google_calendar_name]}'. This calendar will be created if it does not already exist."
-  opts.on("-n", "--google-calendar-name NAME", g_help) do |name|
+  opts.on("-n", "--google-calendar-name NAME", g_help) do | name |
     options[:google_calendar_name] = name
-  end
-
-  opts.on("-t", "--timezone TIMEZONE", "Mandatory if your Google calendar does not already exist, not required if it does. The timezone that you wish your Google calendar to be displayed in.") do | timezone |
-    options[:timezone] = timezone
   end
 
   opts.on( '-h', '--help', 'Display this screen' ) do

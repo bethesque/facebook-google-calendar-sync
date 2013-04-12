@@ -17,7 +17,7 @@ module FacebookGoogleCalendarSync
     config = DEFAULT_CONFIG.merge(config).with_indifferent_access    
     configure_client config[:google_api_config_file]
     facebook_calendar = retrieve_facebook_calendar config[:facebook_calendar_url]    
-    google_calendar = GoogleCalendar.find_or_create_calendar 'summary' => config[:google_calendar_name], 'timeZone' => config[:timezone]
+    google_calendar = GoogleCalendar.find_or_create_calendar config[:google_calendar_name]
     logger.info "The last Facebook event update that was synchronised to '#{google_calendar.summary}' happend at #{google_calendar.last_modified}"
     Synchroniser.new(facebook_calendar, google_calendar).synchronise
   end
