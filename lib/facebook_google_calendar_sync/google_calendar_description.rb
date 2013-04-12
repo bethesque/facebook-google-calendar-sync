@@ -7,7 +7,7 @@ module FacebookGoogleCalendarSync
     DESCRIPTION_SUFFIX = "\nTo ensure calendar synchronises properly, please do not modify this description."
 
     def extract_last_modified_date description
-      DateTime.strptime(description[DESCRIPTION_PREFIX.size..58])
+      DateTime.strptime(description[DESCRIPTION_PREFIX.size..DESCRIPTION_PREFIX.size+25])
     end
 
     def create_description date_time
