@@ -1,6 +1,6 @@
 # FacebookGoogleCalendarSync
 
-Sync Facebook Events Calendar to Google Calendar. 
+Sync Facebook Events Calendar to Google Calendar.
 
 For Facebook and Google Calendar users
 
@@ -65,6 +65,5 @@ If a Facebook event has synchronised to your Google calendar then deleted, if th
 
 ## TODO
 
-* Include example cron scripts
-* Change description to accuratedly describe date.
+* Tests....
 * Work out if there is a way to fix the event date when there is no location.
