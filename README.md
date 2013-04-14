@@ -38,10 +38,10 @@ Or install the gem 'specific_install' and install it directly from git:
 
 ## Usage
 
-Register the project with Google according to the https://developers.google.com/google-apps/calendar/firstapp#register
-Select "Google calendar" in the services.
-When filling in the API Access details, this is an "Installed application" of type "Other".
-Create your .google-api.yml file according to https://developers.google.com/google-apps/calendar/instantiate
+  * Register the project with Google according to the https://developers.google.com/google-apps/calendar/firstapp#register
+  * Select "Google calendar" in the services.
+  * When filling in the API Access details, this is an "Installed application" of type "Other".
+  * Create your .google-api.yml file according to https://developers.google.com/google-apps/calendar/instantiate
 
 Your Google API file should be found at ~/.google-api.yaml. If you want to move it to another location, you can specify the location using the command line option "-c"
 
