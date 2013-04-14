@@ -63,7 +63,7 @@ module FacebookGoogleCalendarSync
         logger.info "Updating '#{facebook_event.summary}' in #{google_calendar.summary}"
         update_event google_calendar.id, google_event.id, merge_events(google_event, facebook_event)        
       else
-        logger.info "Not updating '#{facebook_event.summary}' in #{google_calendar.summary} as #{facebook_event.last_modified.to_time} is not later than #{google_event.updated.convert_time_zone('Australia/Melbourne')}"                  
+        logger.info "Not updating '#{facebook_event.summary}' in #{google_calendar.summary} as #{to_local(facebook_event.last_modified)} is not later than #{to_local(google_event.updated)}"                  
       end              
     end
 
@@ -76,7 +76,7 @@ module FacebookGoogleCalendarSync
     end
 
     def date_of_most_recent_event_update
-      date_of_most_recent_update(facebook_calendar.events).convert_time_zone(google_calendar.timezone)
+      to_local(date_of_most_recent_update(facebook_calendar.events))
     end
 
     def update_last_known_event_update
@@ -91,7 +91,11 @@ module FacebookGoogleCalendarSync
     end  
 
     def current_time_in_google_calendar_timezone
-      DateTime.now.convert_time_zone(google_calendar.timezone)
+      to_local(DateTime.now)
+    end
+
+    def to_local date_or_time
+      date_or_time.convert_time_zone(google_calendar.timezone)
     end        
   end
 end
