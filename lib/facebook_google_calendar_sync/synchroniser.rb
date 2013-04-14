@@ -83,11 +83,15 @@ module FacebookGoogleCalendarSync
       last_modified = date_of_most_recent_event_update
       if last_modified != google_calendar.last_known_event_update
         logger.info "Updating description of '#{google_calendar.summary}' to include the time of the last known update, #{last_modified}"
-        details = google_calendar.details.to_hash.merge({'description' => create_description(date_of_most_recent_event_update)})
+        details = google_calendar.details.to_hash.merge({'description' => create_description(date_of_most_recent_event_update, current_time_in_google_calendar_timezone)})
         update_calendar google_calendar.id, details
       else
         logger.info "Not updating description of '#{google_calendar.summary}' as the date of the most recent update has not changed from #{google_calendar.last_known_event_update}."
       end
-    end          
+    end  
+
+    def current_time_in_google_calendar_timezone
+      DateTime.now.convert_time_zone(google_calendar.timezone)
+    end        
   end
 end

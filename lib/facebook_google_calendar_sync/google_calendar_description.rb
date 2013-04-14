@@ -10,8 +10,8 @@ module FacebookGoogleCalendarSync
       DateTime.strptime(description[DESCRIPTION_PREFIX.size..DESCRIPTION_PREFIX.size+25])
     end
 
-    def create_description date_time
-      "#{DESCRIPTION_PREFIX}#{date_time.to_s}#{DESCRIPTION_MIDDLE}#{DateTime.now.to_s}#{DESCRIPTION_SUFFIX}"
+    def create_description last_known_event_update, now
+      "#{DESCRIPTION_PREFIX}#{last_known_event_update.to_s}#{DESCRIPTION_MIDDLE}#{now.to_s}#{DESCRIPTION_SUFFIX}"
     end    
   end
 end
