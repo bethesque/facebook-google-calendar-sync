@@ -1,0 +1,2 @@
+MAILTO="you@email.com"
+*/15 * * * * sh -c $'/home/you/bin/facebook-google-calendar-sync.sh > /dev/null'
