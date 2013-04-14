@@ -43,11 +43,13 @@ Select "Google calendar" in the services.
 When filling in the API Access details, this is an "Installed application" of type "Other".
 Create your .google-api.yml file according to https://developers.google.com/google-apps/calendar/instantiate
 
-Copy your Google API yaml file to ~/.google-api.yaml
+Your Google API file should be found at ~/.google-api.yaml. If you want to move it to another location, you can specify the location using the command line option "-c"
+
+By default, your events will be synchronised to a calendar called "My Facebook Events". If this does not exist, it will be created using the timezone of your primary calendar. You can specify the name of the calendar (which may be a pre-existing one) using the command line option "-n"
 
 To run:
 
-bundle exec facebook-google-calendar-sync -t "Australia/Melbourne" -f "http://www.facebook.com/ical/u.php?uid=12345&key=67890"
+    $ bundle exec facebook-google-calendar-sync -f "http://www.facebook.com/ical/u.php?uid=12345&key=67890"
 
 ## Known issues
 
