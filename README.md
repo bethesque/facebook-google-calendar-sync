@@ -16,10 +16,11 @@ Unlike the existing "import the iCal URL provided by Facebook" solution
 
 This gem allows the user to delete events that they are not interested in without going to Facebook to click "Not Going",
 
-while also allowing synchronisation to be reliably and regularly scheduled using cron or similar.
+While also allowing synchronisation to be reliably and regularly scheduled* using cron or similar.
 
 It also displays the details of the "private" Facebook events which would otherwise be hidden by Google Calendar.
 
+*Google Calendar updates external calendars at unpredictable times, far too rarely (often more than 24 hours between updates) and doesn't allow manual refreshes. It also doesn't notify you when it has been unable to update your calendar, so you don't know when you're looking at an out of date version.
 
 ## Installation
 
