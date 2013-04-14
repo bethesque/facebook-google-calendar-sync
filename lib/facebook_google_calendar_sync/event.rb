@@ -1,6 +1,6 @@
 require 'date'
 
-module FacebookGoogleCalendarSync    
+module FacebookGoogleCalendarSync
   module Event
 
     def convert_event_to_hash ical_event
@@ -21,7 +21,7 @@ module FacebookGoogleCalendarSync
     def date_of_most_recent_update facebook_events
       most_recently_modified_event = facebook_events.max{ | event_a, event_b | event_a.last_modified <=> event_b.last_modified }
       most_recently_modified_event.last_modified
-    end     
+    end
 
     private
 
@@ -32,5 +32,5 @@ module FacebookGoogleCalendarSync
         {'dateTime' => date_time.strftime('%Y-%m-%dT%H:%M:%S.000%:z')}
       end
     end
-  end   
+  end
 end

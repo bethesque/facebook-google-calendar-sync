@@ -1,10 +1,10 @@
 require 'facebook_google_calendar_sync/google_calendar_client'
 require 'facebook_google_calendar_sync/google_calendar_description'
 
-module FacebookGoogleCalendarSync    
+module FacebookGoogleCalendarSync
 
   class GoogleCalendar
-    extend Logging    
+    extend Logging
     extend GoogleCalendarClient
     include GoogleCalendarDescription
 
@@ -12,10 +12,10 @@ module FacebookGoogleCalendarSync
 
     def initialize details, data
       @details = details
-      @data = data      
+      @data = data
     end
 
-    def self.find_or_create_calendar calendar_name      
+    def self.find_or_create_calendar calendar_name
       google_calendar_details = find_or_create_calendar_details calendar_name
       calendar = get_calendar google_calendar_details.id
       GoogleCalendar.new(google_calendar_details, calendar)
@@ -29,7 +29,7 @@ module FacebookGoogleCalendarSync
       @details.summary
     end
 
-    def last_known_event_update      
+    def last_known_event_update
       extract_last_modified_date(description) rescue DateTime.new(0)
     end
 
@@ -51,7 +51,7 @@ module FacebookGoogleCalendarSync
 
     private
 
-    def self.find_or_create_calendar_details calendar_name      
+    def self.find_or_create_calendar_details calendar_name
       google_calendar_details = find_calendar_details_by_summary calendar_name
       if google_calendar_details == nil
         timezone = find_primary_calendar_details.timeZone
@@ -61,6 +61,6 @@ module FacebookGoogleCalendarSync
         logger.info "Found existing Google calendar #{calendar_name}"
       end
       google_calendar_details
-    end    
+    end
   end
 end

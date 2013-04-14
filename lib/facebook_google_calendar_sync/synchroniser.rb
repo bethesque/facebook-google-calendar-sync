@@ -30,8 +30,8 @@ module FacebookGoogleCalendarSync
 
     def synchronise_events
       facebook_calendar.events.each do | facebook_event |
-        begin          
-          synchronise_event facebook_event        
+        begin
+          synchronise_event facebook_event
         rescue StandardError => e
           logger.error e
           logger.error "Error synchronising event. Please note that if this was a new event, it will not have been added to your calendar."
@@ -47,7 +47,7 @@ module FacebookGoogleCalendarSync
       else
         handle_google_event_found facebook_event, google_event
       end
-    end  
+    end
 
     def handle_google_event_not_found facebook_event
       if event_created_since_calendar_last_modified facebook_event
@@ -61,10 +61,10 @@ module FacebookGoogleCalendarSync
     def handle_google_event_found facebook_event, google_event
       if event_updated_since_calendar_last_modified facebook_event
         logger.info "Updating '#{facebook_event.summary}' in #{google_calendar.summary}"
-        update_event google_calendar.id, google_event.id, merge_events(google_event, facebook_event)        
+        update_event google_calendar.id, google_event.id, merge_events(google_event, facebook_event)
       else
-        logger.info "Not updating '#{facebook_event.summary}' in #{google_calendar.summary} as #{to_local(facebook_event.last_modified)} is not later than #{to_local(google_event.updated)}"                  
-      end              
+        logger.info "Not updating '#{facebook_event.summary}' in #{google_calendar.summary} as #{to_local(facebook_event.last_modified)} is not later than #{to_local(google_event.updated)}"
+      end
     end
 
     def event_updated_since_calendar_last_modified facebook_event
@@ -88,7 +88,7 @@ module FacebookGoogleCalendarSync
       else
         logger.info "Not updating description of '#{google_calendar.summary}' as the date of the most recent update has not changed from #{google_calendar.last_known_event_update}."
       end
-    end  
+    end
 
     def current_time_in_google_calendar_timezone
       to_local(DateTime.now)
@@ -96,6 +96,6 @@ module FacebookGoogleCalendarSync
 
     def to_local date_or_time
       date_or_time.convert_time_zone(google_calendar.timezone)
-    end        
+    end
   end
 end

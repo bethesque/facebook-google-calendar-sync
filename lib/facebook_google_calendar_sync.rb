@@ -7,16 +7,16 @@ require 'facebook_google_calendar_sync/google_calendar'
 require 'facebook_google_calendar_sync/google_calendar_client'
 require 'active_support/core_ext/hash/indifferent_access'
 
-module FacebookGoogleCalendarSync    
+module FacebookGoogleCalendarSync
 
-  extend Logging  
-  
+  extend Logging
+
   DEFAULT_CONFIG = {:google_api_config_file => Pathname.new(ENV['HOME']) + '.google-api.yaml', :google_calendar_name => "My Facebook Events"}
 
-  def self.sync config    
-    config = DEFAULT_CONFIG.merge(config).with_indifferent_access    
+  def self.sync config
+    config = DEFAULT_CONFIG.merge(config).with_indifferent_access
     configure_client config[:google_api_config_file]
-    facebook_calendar = retrieve_facebook_calendar config[:facebook_calendar_url]    
+    facebook_calendar = retrieve_facebook_calendar config[:facebook_calendar_url]
     google_calendar = GoogleCalendar.find_or_create_calendar config[:google_calendar_name]
     logger.info "Last known Facebook event update occurred at #{google_calendar.last_known_event_update}"
     Synchroniser.new(facebook_calendar, google_calendar).synchronise

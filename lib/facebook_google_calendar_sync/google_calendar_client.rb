@@ -3,14 +3,14 @@ require 'pathname'
 require 'google/api_client'
 require 'ostruct'
 
-module FacebookGoogleCalendarSync    
+module FacebookGoogleCalendarSync
 
 class SyncException < StandardError
 end
 
  module GoogleCalendarClient
     def self.configure
-      @@config = OpenStruct.new 
+      @@config = OpenStruct.new
       yield @@config
 
       oauth_yaml = YAML.load_file(@@config.google_api_config_file)
@@ -29,7 +29,7 @@ end
     end
 
     def find_calendar_details_by_summary calendar_summary
-      get_calendar_list.items.find { | calendar | calendar.summary == calendar_summary && calendar.accessRole == 'owner'}      
+      get_calendar_list.items.find { | calendar | calendar.summary == calendar_summary && calendar.accessRole == 'owner'}
     end
 
     def find_primary_calendar_details
@@ -37,11 +37,11 @@ end
     end
 
     def get_calendar_list
-      make_call :api_method => calendar_service.calendar_list.list      
+      make_call :api_method => calendar_service.calendar_list.list
     end
 
     def get_calendar calendar_id
-      make_call :api_method => calendar_service.events.list, :parameters => {'calendarId' => calendar_id}      
+      make_call :api_method => calendar_service.events.list, :parameters => {'calendarId' => calendar_id}
     end
 
     def add_event calendar_id, event
@@ -74,7 +74,7 @@ end
       result = client.execute(params.merge(:headers => {'Content-Type' => 'application/json'}))
       check_for_success result
       result.data
-    end    
+    end
 
     def client
       @@client
