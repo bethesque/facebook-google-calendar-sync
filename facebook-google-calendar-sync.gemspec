@@ -6,8 +6,8 @@ require 'facebook_google_calendar_sync/version'
 Gem::Specification.new do |spec|
   spec.name          = "facebook-google-calendar-sync"
   spec.version       = FacebookGoogleCalendarSync::VERSION
-  spec.authors       = ["Beth"]
-  spec.email         = ["beth@bethesque.com"]
+  spec.authors       = ["Bethesque"]
+  spec.email         = ["bethesque.facebook.cal.sync@gmail.com"]
   spec.description   = %q{Syncs Facebook calendar to Google calendar}
   spec.summary       = %q{Syncs Facebook calendar to Google calendar}
   spec.homepage      = ""
