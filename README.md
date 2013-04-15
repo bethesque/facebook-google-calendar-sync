@@ -26,15 +26,7 @@ It also displays the details of the "private" Facebook events which would otherw
 
 **Set up the gem**
 
-Add this line to your application's Gemfile:
-
-    gem 'facebook-google-calendar-sync', :git => 'git@github.com:bethesque/facebook-google-calendar-sync.git'
-
-And then execute:
-
-    $ bundle
-
-Or install the gem 'specific_install' and install it directly from git:
+Install the gem 'specific_install' and then install the facebook-google-calendar-sync gem directly from git (it's not on Rubygems yet):
 
     $ gem install specific_install
     $ gem specific_install -l http://github.com/bethesque/facebook-google-calendar-sync.git
