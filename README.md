@@ -24,25 +24,18 @@ It also displays the details of the "private" Facebook events which would otherw
 
 ## Installation
 
-**Set up the gem**
-
 Install the gem 'specific_install' and then install the facebook-google-calendar-sync gem directly from git (it's not on Rubygems yet):
 
     $ gem install specific_install
     $ gem specific_install -l http://github.com/bethesque/facebook-google-calendar-sync.git
 
-**Set up the permissions**
+Create a Goggle permissions file to allow the gem to access your Google Calendar. This command will open a browser window.
 
-  1. Go to https://code.google.com/apis/console and to register a new project with Google, with what ever name you like.
-  2. Select "Google calendar" in the services.
-  3. Go to the API Access tab, and click "Create an OAuth 2.0 client ID". You only need to fill in the project name, with what ever name you choose. Select "Installed application" of type "Other" on the second screen.
-  4. Use the newly generated client ID and client secret to run the following line (it will open a browser for you to confirm that the code can access your Google Calendar)
-
-      $ bundle exec google-api oauth-2-login --scope=https://www.googleapis.com/auth/calendar --client-id=CLIENT_ID --client-secret=CLIENT_SECRET
+    $ bundle exec google-api oauth-2-login --scope=https://www.googleapis.com/auth/calendar --client-id=436161995365.apps.googleusercontent.com --client-secret=WgTEjg-b8rXCRL28hweLcSuV
 
 You will now have a .google-api.yaml file in your home directory.
 
-For more information on the above process see https://developers.google.com/google-apps/calendar/firstapp#register and the Ruby tab on https://developers.google.com/google-apps/calendar/instantiate
+For more information on the last step see https://developers.google.com/google-apps/calendar/firstapp#register and the Ruby tab on https://developers.google.com/google-apps/calendar/instantiate
 
 ## Usage
 
