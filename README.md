@@ -64,6 +64,9 @@ If your Google API YAML file isn't stored at ~/.google-api.yaml, you can specify
 
 By default, your events will be synchronised to a calendar called "My Facebook Events". If this does not exist, it will be created using the timezone of your primary calendar. You can specify the name of the calendar (which may be a pre-existing one) using the command line option "-n"
 
+## Long term usage
+
+You will probably want to set this up as a cron job or similar. See the examples directory for more information.
 
 ## Known issues
 
