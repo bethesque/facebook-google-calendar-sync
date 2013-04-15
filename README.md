@@ -41,8 +41,12 @@ Or install the gem 'specific_install' and install it directly from git:
 
   * Register the project with Google according to the https://developers.google.com/google-apps/calendar/firstapp#register
   * Select "Google calendar" in the services.
-  * Create your .google-api.yml file according to https://developers.google.com/google-apps/calendar/instantiate
-  * When filling in the API Access details, this is an "Installed application" of type "Other".
+  * Go to the API Access tab, and click "Create an OAuth 2.0 client ID". You only need to fill in the project name, with what ever name you choose. Select "Installed application" of type "Other" on the second screen.
+  * Use the newly generated client ID and client secret to run the following line:
+
+    $ google-api oauth-2-login --scope=https://www.googleapis.com/auth/calendar --client-id=CLIENT_ID --client-secret=CLIENT_SECRET
+
+  * This will create a .google-api.yaml file in your home directory (See the Ruby tab on https://developers.google.com/google-apps/calendar/instantiate for more information)
 
 Your Google API file should be found at ~/.google-api.yaml. If you want to move it to another location, you can specify the location using the command line option "-c"
 
