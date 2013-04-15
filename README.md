@@ -24,12 +24,9 @@ It also displays the details of the "private" Facebook events which would otherw
 
 ## Installation
 
-Install the gem 'specific_install' and then install the facebook-google-calendar-sync gem directly from git (it's not on Rubygems yet):
+    $ gem install facebook-google-calendar-sync
 
-    $ gem install specific_install
-    $ gem specific_install -l http://github.com/bethesque/facebook-google-calendar-sync.git
-
-Create a Goggle permissions file to allow the gem to access your Google Calendar. This command will open a browser window.
+Create a Goggle permissions file to allow the gem to access your Google Calendar. This command will open a browser window. (Have found this did not work in jruby, tested succesfully in MRI ruby-1.9.3-p392)
 
     $ bundle exec google-api oauth-2-login --scope=https://www.googleapis.com/auth/calendar --client-id=436161995365.apps.googleusercontent.com --client-secret=WgTEjg-b8rXCRL28hweLcSuV
 
