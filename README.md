@@ -37,11 +37,9 @@ Or install the gem 'specific_install' and install it directly from git:
     $ gem install specific_install
     $ gem specific_install -l http://github.com/bethesque/facebook-google-calendar-sync.git
 
-## Usage
-
   1. Go to https://code.google.com/apis/console and to register a new project with Google, with what ever name you like.
   2. Select "Google calendar" in the services.
-  3.  Go to the API Access tab, and click "Create an OAuth 2.0 client ID". You only need to fill in the project name, with what ever name you choose. Select "Installed application" of type "Other" on the second screen.
+  3. Go to the API Access tab, and click "Create an OAuth 2.0 client ID". You only need to fill in the project name, with what ever name you choose. Select "Installed application" of type "Other" on the second screen.
   4. Use the newly generated client ID and client secret to run the following line (it will open a browser for you to confirm that the code can access your Google Calendar.
 
     $ bundle exec google-api oauth-2-login --scope=https://www.googleapis.com/auth/calendar --client-id=CLIENT_ID --client-secret=CLIENT_SECRET
@@ -50,13 +48,18 @@ You will now have a .google-api.yaml file in your home directory.
 
 For more information on the above process see https://developers.google.com/google-apps/calendar/firstapp#register and the Ruby tab on https://developers.google.com/google-apps/calendar/instantiate
 
-Your Google API file should be found at ~/.google-api.yaml. If you want to move it to another location, you can specify the location using the command line option "-c"
+## Usage
 
-By default, your events will be synchronised to a calendar called "My Facebook Events". If this does not exist, it will be created using the timezone of your primary calendar. You can specify the name of the calendar (which may be a pre-existing one) using the command line option "-n"
+You can find your Facebook iCal URL by going to your Events page, and clicking the cog icon and selecting Export. Copy the URL from the "upcoming events" link, and change the "webcal://" prefix to "http://".
 
 To run:
 
     $ bundle exec facebook-google-calendar-sync -f "http://www.facebook.com/ical/u.php?uid=12345&key=67890"
+
+If your Google API YAML file isn't stored at ~/.google-api.yaml, you can specify the location using the command line option "-c"
+
+By default, your events will be synchronised to a calendar called "My Facebook Events". If this does not exist, it will be created using the timezone of your primary calendar. You can specify the name of the calendar (which may be a pre-existing one) using the command line option "-n"
+
 
 ## Known issues
 
