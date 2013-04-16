@@ -28,6 +28,10 @@ end
       @@calendar_service = @@client.discovered_api('calendar', 'v3')
     end
 
+    def get_calendar_metadata calendar_id
+      make_call :api_method => calendar_service.calendars.get, :parameters => {'calendarId' => calendar_id}
+    end
+
     def find_calendar_details_by_summary calendar_summary
       get_calendar_list.items.find { | calendar | calendar.summary == calendar_summary && calendar.accessRole == 'owner'}
     end
@@ -45,7 +49,7 @@ end
     end
 
     def add_event calendar_id, event
-      make_call :api_method => calendar_service.events.insert,
+      make_call :api_method => calendar_service.events.import,
         :parameters => {'calendarId' => calendar_id},
         :body_object => event
     end

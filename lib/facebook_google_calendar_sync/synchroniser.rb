@@ -35,7 +35,8 @@ module FacebookGoogleCalendarSync
         rescue StandardError => e
           logger.error e
           logger.error "Error synchronising event. Please note that if this was a new event, it will not have been added to your calendar."
-          logger.error convert_event_to_hash(facebook_event)
+          logger.error convert_event_to_hash(facebook_event, google_calendar.id)
+          raise e
         end
       end
     end
@@ -52,7 +53,7 @@ module FacebookGoogleCalendarSync
     def handle_google_event_not_found facebook_event
       if event_created_since_calendar_last_modified facebook_event
         logger.info "Adding '#{facebook_event.summary}' to #{google_calendar.summary}"
-        add_event google_calendar.id, convert_event_to_hash(facebook_event)
+        add_event google_calendar.id, convert_event_to_hash(facebook_event, google_calendar.id)
       else
         logger.info "Not updating '#{facebook_event.summary}' as it has been deleted from the target calendar since #{google_calendar.last_known_event_update}."
       end
@@ -61,7 +62,7 @@ module FacebookGoogleCalendarSync
     def handle_google_event_found facebook_event, google_event
       if event_updated_since_calendar_last_modified facebook_event
         logger.info "Updating '#{facebook_event.summary}' in #{google_calendar.summary}"
-        update_event google_calendar.id, google_event.id, merge_events(google_event, facebook_event)
+        update_event google_calendar.id, google_event.id, merge_events(google_event, facebook_event, google_calendar.id)
       else
         logger.info "Not updating '#{facebook_event.summary}' in #{google_calendar.summary} as #{to_local(facebook_event.last_modified)} is not later than #{to_local(google_event.updated)}"
       end
