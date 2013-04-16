@@ -30,7 +30,7 @@ Create a Goggle permissions file to allow the gem to access your Google Calendar
 
     $ bundle exec google-api oauth-2-login --scope=https://www.googleapis.com/auth/calendar --client-id=436161995365.apps.googleusercontent.com --client-secret=WgTEjg-b8rXCRL28hweLcSuV
 
-You will now have a .google-api.yaml file in your home directory.
+You will now have a .google-api.yaml file in your home directory. Note: the gem can only access your calendar data if it has this file. The synchronisation process will run locally on your computer - no external service will have access to your Google Calendar.
 
 For more information on the last step see https://developers.google.com/google-apps/calendar/firstapp#register and the Ruby tab on https://developers.google.com/google-apps/calendar/instantiate
 

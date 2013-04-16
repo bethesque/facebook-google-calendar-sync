@@ -5,17 +5,26 @@ module FacebookGoogleCalendarSync
 
     def convert_event_to_hash ical_event
       {
-         'summary' => ical_event.summary,
+         'summary' => "#{ical_event.summary}\n\nOrganiser: ",
          'start' => date_hash(ical_event.dtstart),
          'end' => date_hash(ical_event.dtend),
          'iCalUID' => ical_event.uid,
          'description' => ical_event.description,
-         'location' => ical_event.location
+         'location' => ical_event.location,
+         'organizer' => organiser(ical_event)
       }
     end
 
     def merge_events google_event, facebook_event
       google_event.to_hash.merge(convert_event_to_hash(facebook_event))
+    end
+
+    def organiser ical_event
+      matches = ical_event.organizer_property.to_s.scan(/CN=(.*):MAILTO:(.*)/).flatten
+      {
+        'displayName'=> matches[0],
+        'email' => matches[1]
+      }
     end
 
     def date_of_most_recent_update facebook_events
