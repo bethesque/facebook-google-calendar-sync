@@ -11,10 +11,10 @@ module FacebookGoogleCalendarSync
          'start' => date_hash(ical_event.dtstart),
          'end' => date_hash(ical_event.dtend),
          'iCalUID' => ical_event.uid,
-         'description' => ical_event.description,
+         'description' => description(ical_event),
          'location' => ical_event.location,
-         'organizer' => organiser(ical_event),
-         'attendees' => attendees(ical_event, calendar_id),
+         #'organizer' => organiser(ical_event),
+         #'attendees' => attendees(ical_event, calendar_id),
          'transparency' => transparency(ical_event)
       }
     end
@@ -25,6 +25,10 @@ module FacebookGoogleCalendarSync
 
     def attendees ical_event, calendar_id
       [{"email"=>calendar_id, 'responseStatus' => partstat(ical_event)}]
+    end
+
+    def description facebook_event
+      "#{facebook_event.description}\n\nOrganiser: #{organiser(facebook_event)['displayName']}"
     end
 
     def partstat ical_event
