@@ -14,7 +14,8 @@ module FacebookGoogleCalendarSync
          'description' => ical_event.description,
          'location' => ical_event.location,
          'organizer' => organiser(ical_event),
-         'attendees' => attendees(ical_event, calendar_id)
+         'attendees' => attendees(ical_event, calendar_id),
+         'transparency' => transparency(ical_event)
       }
     end
 
@@ -23,8 +24,15 @@ module FacebookGoogleCalendarSync
     end
 
     def attendees ical_event, calendar_id
-      #STATUS_MAPPINGS[ical_event.partstat]
-      [{"email"=>calendar_id, 'responseStatus' => 'accepted'}]
+      [{"email"=>calendar_id, 'responseStatus' => partstat(ical_event)}]
+    end
+
+    def partstat ical_event
+      STATUS_MAPPINGS[ical_event.to_s.scan(/PARTSTAT::(.*)/).flatten.first()]
+    end
+
+    def transparency ical_event
+      partstat(ical_event) == 'accepted' ? 'opaque' : 'transparent'
     end
 
     def organiser ical_event
