@@ -2,6 +2,7 @@ require 'yaml'
 require 'pathname'
 require 'google/api_client'
 require 'ostruct'
+require 'facebook_google_calendar_sync/version'
 
 module FacebookGoogleCalendarSync
 
@@ -14,7 +15,7 @@ end
       yield @@config
 
       oauth_yaml = YAML.load_file(@@config.google_api_config_file)
-      @@client = Google::APIClient.new({:application_name => "Facebook to Google Calendar Sync", :application_version => "0.1.0"})
+      @@client = Google::APIClient.new({:application_name => "Facebook to Google Calendar Sync", :application_version => FacebookGoogleCalendarSync::VERSION})
       @@client.authorization.client_id = oauth_yaml["client_id"]
       @@client.authorization.client_secret = oauth_yaml["client_secret"]
       @@client.authorization.scope = oauth_yaml["scope"]
