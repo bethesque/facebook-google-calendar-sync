@@ -7,6 +7,7 @@ require 'facebook_google_calendar_sync/google_calendar'
 require 'facebook_google_calendar_sync/google_calendar_client'
 require 'active_support/core_ext/hash/indifferent_access'
 
+
 module FacebookGoogleCalendarSync
 
   extend Logging

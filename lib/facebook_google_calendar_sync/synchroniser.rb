@@ -1,21 +1,23 @@
+require 'time_zone_hack'
 require 'facebook_google_calendar_sync/google_calendar_client'
 require 'facebook_google_calendar_sync/google_calendar_description'
-require 'time_zone_hack'
 require 'facebook_google_calendar_sync/event_converter'
+require 'facebook_google_calendar_sync/timezone'
 
 module FacebookGoogleCalendarSync
   class Synchroniser
     include Logging
     include GoogleCalendarDescription
     include GoogleCalendarClient
+    include Timezone
 
     def initialize(facebook_calendar, google_calendar)
-      @facebook_calendar = facebook_calendar
-      @google_calendar = google_calendar
+      @google_calendar = with_timezone(google_calendar, google_calendar.timezone)
+      @events = facebook_calendar.events.collect{ | facebook_event | with_google_calendar_timezone(facebook_event) }
     end
 
-    def facebook_calendar
-      @facebook_calendar
+    def events
+      @events
     end
 
     def google_calendar
@@ -27,10 +29,18 @@ module FacebookGoogleCalendarSync
       update_last_known_event_update
     end
 
+    def convert facebook_event
+      EventConverter.new(facebook_event, google_calendar.id)
+    end
+
+    def with_google_calendar_timezone target
+      with_timezone(target, google_calendar.timezone)
+    end
+
     def synchronise_events
-      facebook_calendar.events.each do | facebook_event |
+      events.each do | facebook_event |
         begin
-          synchronise_event EventConverter.new(facebook_event, google_calendar.id, google_calendar.timezone)
+          synchronise_event convert(facebook_event)
         rescue StandardError => e
           logger.error e
           logger.error "Error synchronising event. Please note that if this was a new event, it will not have been added to your calendar."
@@ -45,7 +55,7 @@ module FacebookGoogleCalendarSync
       if google_event == nil
         handle_google_event_not_found facebook_event
       else
-        handle_google_event_found facebook_event, google_event
+        handle_google_event_found facebook_event, with_google_calendar_timezone(google_event)
       end
     end
 
@@ -63,7 +73,7 @@ module FacebookGoogleCalendarSync
         logger.info "Updating '#{facebook_event.summary}' in #{google_calendar.summary}"
         update_event google_calendar.id, google_event.id, facebook_event.to_hash.merge(google_event)
       else
-        logger.info "Not updating '#{facebook_event.summary}' in #{google_calendar.summary} as #{facebook_event.last_modified} is not later than #{to_local(google_event.updated)}"
+        logger.info "Not updating '#{facebook_event.summary}' in #{google_calendar.summary} as #{facebook_event.last_modified} is not later than #{google_event.updated}"
       end
     end
 
@@ -82,21 +92,19 @@ module FacebookGoogleCalendarSync
         details = google_calendar.details.to_hash.merge({'description' => create_description(date_of_most_recent_event_update, current_time_in_google_calendar_timezone)})
         update_calendar google_calendar.id, details
       else
-        logger.info "Not updating description of '#{google_calendar.summary}' as the date of the most recent update has not changed from #{to_local(google_calendar.last_known_event_update)}."
+        logger.info "Not updating description of '#{google_calendar.summary}' as the date of the most recent update has not changed from #{google_calendar.last_known_event_update}."
       end
     end
 
     def current_time_in_google_calendar_timezone
-      to_local(DateTime.now)
+      DateTime.now.convert_time_zone(google_calendar.timezone)
     end
 
-    def to_local date_or_time
-      date_or_time.convert_time_zone(google_calendar.timezone)
-    end
-
+    #Use the date of the most recent event update as our 'line in the sand' rather than the Google calendar's updated
+    #property, because of the slight differences in the clocks between Facebook and Google calendar and the fact that
+    #this script takes a non-zero amount of time to run, which could lead to inconsitencies in the synchronisation logic.
     def date_of_most_recent_event_update
-      most_recently_modified_event = facebook_calendar.events.max{ | event_a, event_b | event_a.last_modified <=> event_b.last_modified }
-      most_recently_modified_event.last_modified
+      events.max{ | event_a, event_b | event_a.last_modified <=> event_b.last_modified }.last_modified      
     end
   end
 end
