@@ -37,17 +37,21 @@ module FacebookGoogleCalendarSync
       with_timezone(target, google_calendar.timezone)
     end
 
+    #TODO: Fix this method!
     def synchronise_events
+      errors = []
       events.each do | facebook_event |
+        converted_event = nil
         begin
-          synchronise_event convert(facebook_event)
+          converted_event = convert(facebook_event)
+          synchronise_event converted_event
         rescue StandardError => e
           logger.error e
-          logger.error "Error synchronising event. Please note that if this was a new event, it will not have been added to your calendar."
-          logger.error facebook_event.summary
-          raise e
+          logger.error "Error synchronising event. #{converted_event.to_hash}" rescue nil
+          errors << e
         end
       end
+      raise "Errors synchronising calendar" if errors.any?
     end
 
     def synchronise_event facebook_event
@@ -104,7 +108,7 @@ module FacebookGoogleCalendarSync
     #property, because of the slight differences in the clocks between Facebook and Google calendar and the fact that
     #this script takes a non-zero amount of time to run, which could lead to inconsitencies in the synchronisation logic.
     def date_of_most_recent_event_update
-      events.max{ | event_a, event_b | event_a.last_modified <=> event_b.last_modified }.last_modified      
+      events.max{ | event_a, event_b | event_a.last_modified <=> event_b.last_modified }.last_modified
     end
   end
 end

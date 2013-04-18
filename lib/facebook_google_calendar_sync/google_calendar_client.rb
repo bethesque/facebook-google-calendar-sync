@@ -77,7 +77,7 @@ end
 
     def make_call params
       result = client.execute(params.merge(:headers => {'Content-Type' => 'application/json'}))
-      check_for_success result
+      check_for_success result, params
       result.data
     end
 
@@ -89,8 +89,8 @@ end
       @@calendar_service
     end
 
-    def check_for_success result
-      raise SyncException.new(result.status.to_s + " " + result.body) unless result.status == 200
+    def check_for_success result, params
+      raise SyncException.new(result.status.to_s + "\nResponse:" + result.body + "\nRequest: #{params}") unless result.status == 200
     end
 
   end
