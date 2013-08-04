@@ -10,15 +10,22 @@ module FacebookGoogleCalendarSync
 
     attr_accessor :details
 
-    def initialize details, data
+    def initialize details, events_list
       @details = details
-      @data = data
+      @events_list = events_list
     end
 
     def self.find_or_create_calendar calendar_name
       google_calendar_details = find_or_create_calendar_details calendar_name
-      calendar = get_calendar google_calendar_details.id
-      GoogleCalendar.new(google_calendar_details, calendar)
+      events_list = get_events_list google_calendar_details.id
+      GoogleCalendar.new(google_calendar_details, events_list)
+    end
+
+    def self.find_calendar calendar_name
+      google_calendar_details = find_calendar_details_by_summary calendar_name
+      return nil unless google_calendar_details
+      events_list = get_events_list google_calendar_details.id
+      GoogleCalendar.new(google_calendar_details, events_list)
     end
 
     def id
@@ -38,7 +45,7 @@ module FacebookGoogleCalendarSync
     end
 
     def events
-      @data.items
+      @events_list.items
     end
 
     def timezone

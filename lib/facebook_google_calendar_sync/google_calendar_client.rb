@@ -3,6 +3,7 @@ require 'pathname'
 require 'google/api_client'
 require 'ostruct'
 require 'facebook_google_calendar_sync/version'
+require 'facebook_google_calendar_sync/logging'
 
 module FacebookGoogleCalendarSync
 
@@ -45,7 +46,7 @@ end
       make_call :api_method => calendar_service.calendar_list.list
     end
 
-    def get_calendar calendar_id
+    def get_events_list calendar_id
       make_call :api_method => calendar_service.events.list, :parameters => {'calendarId' => calendar_id}
     end
 
@@ -86,6 +87,7 @@ end
     end
 
     def calendar_service
+      raise "Calendar service not yet configured, please run GoogleCalendarClient.configure" unless defined?(@@calendar_service)
       @@calendar_service
     end
 

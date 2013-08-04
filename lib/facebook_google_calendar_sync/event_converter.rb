@@ -51,6 +51,14 @@ module FacebookGoogleCalendarSync
       }
     end
 
+    def modified_after? date_time
+      last_modified > date_time
+    end
+
+    def created_after? date_time
+      created > date_time
+    end
+
     def method_missing(method, *args, &block)
       if facebook_event.respond_to?(method)
         facebook_event.send(method, *args, &block)
