@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+$: << File.expand_path('../lib', File.dirname(__FILE__)) ##Delete before checkin
 require 'facebook_google_calendar_sync/cli'
 require 'facebook_google_calendar_sync'
 require 'optparse'
