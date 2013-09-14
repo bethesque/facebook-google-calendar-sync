@@ -1,5 +1,6 @@
 module FacebookGoogleCalendarSync
 
+  # Converts Facebook event into Google event hash
   class EventConverter
 
     attr_accessor :facebook_event, :google_calendar_id

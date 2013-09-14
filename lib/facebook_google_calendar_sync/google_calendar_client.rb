@@ -3,6 +3,7 @@ require 'pathname'
 require 'google/api_client'
 require 'ostruct'
 require 'facebook_google_calendar_sync/version'
+require 'facebook_google_calendar_sync/logging'
 
 module FacebookGoogleCalendarSync
 
@@ -10,6 +11,9 @@ class SyncException < StandardError
 end
 
  module GoogleCalendarClient
+
+    include Logging
+
     def self.configure
       @@config = OpenStruct.new
       yield @@config
@@ -76,7 +80,9 @@ end
     private
 
     def make_call params
-      result = client.execute(params.merge(:headers => {'Content-Type' => 'application/json'}))
+      request = params.merge(:headers => {'Content-Type' => 'application/json'})
+      logger.debug("Calling Google Calendar API with request #{request}")
+      result = client.execute(request)
       check_for_success result, params
       result.data
     end

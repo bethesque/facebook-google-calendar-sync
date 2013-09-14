@@ -23,6 +23,12 @@ OptionParser.new do |opts|
     options[:google_calendar_name] = name
   end
 
+  v_help = "Verbose logging"
+  opts.on("-v", "--verbose", v_help) do | verbose |
+    options[:log_level] = :debug
+  end
+
+
   opts.on( '-h', '--help', 'Display this screen' ) do
     puts opts
     exit
