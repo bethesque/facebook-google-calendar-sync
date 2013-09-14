@@ -66,7 +66,7 @@ module FacebookGoogleCalendarSync
     def handle_google_event_not_found facebook_event
       if event_created_since_calendar_last_modified facebook_event
         logger.info "Adding '#{facebook_event.summary}' to #{google_calendar.summary}"
-        add_event google_calendar.id, facebook_event.to_hash
+        add_new_event facebook_event
       else
         logger.info "Not updating '#{facebook_event.summary}' as it has been deleted from the target calendar since #{google_calendar.last_known_event_update}."
       end
@@ -75,10 +75,22 @@ module FacebookGoogleCalendarSync
     def handle_google_event_found facebook_event, google_event
       if event_updated_since_calendar_last_modified facebook_event
         logger.info "Updating '#{facebook_event.summary}' in #{google_calendar.summary}"
-        update_event google_calendar.id, google_event.id, facebook_event.to_hash.merge(google_event)
+        update_existing_event facebook_event, google_event
       else
         logger.info "Not updating '#{facebook_event.summary}' in #{google_calendar.summary} as #{facebook_event.last_modified} is not later than #{google_event.updated}"
       end
+    end
+
+    def add_new_event facebook_event
+      add_event google_calendar.id, facebook_event.to_hash
+    end
+
+    def update_existing_event facebook_event, google_event
+      update_event google_calendar.id, google_event.id, merge_events(facebook_event, google_event)
+    end
+
+    def merge_events facebook_event, google_event
+      google_event.to_hash.merge(facebook_event.to_hash)
     end
 
     def event_updated_since_calendar_last_modified facebook_event
