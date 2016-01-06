@@ -18,7 +18,8 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_dependency 'google-api-client', '~>0.6'
+  spec.add_dependency 'google-api-client', '~>0.6.0'
+  spec.add_dependency 'jwt', '~> 0.1.4'
   spec.add_dependency 'ri_cal', '~>0.8'
   spec.add_dependency 'activesupport', '~>3.2'
   spec.add_development_dependency 'vcr', '~>2.4'
