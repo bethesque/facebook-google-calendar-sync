@@ -49,8 +49,8 @@ end
       make_call :api_method => calendar_service.calendar_list.list
     end
 
-    def get_calendar calendar_id
-      make_call :api_method => calendar_service.events.list, :parameters => {'calendarId' => calendar_id}
+    def get_future_events calendar_id
+      make_call :api_method => calendar_service.events.list, :parameters => {'calendarId' => calendar_id, 'timeMin' => (DateTime.now - 1).xmlschema}
     end
 
     def add_event calendar_id, event

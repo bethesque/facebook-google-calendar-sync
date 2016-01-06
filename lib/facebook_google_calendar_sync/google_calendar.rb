@@ -70,8 +70,8 @@ module FacebookGoogleCalendarSync
     private
 
     def self.calendar_with_events google_calendar_details
-      calendar = get_calendar google_calendar_details.id
-      GoogleCalendar.new(google_calendar_details, calendar)
+      events = get_future_events google_calendar_details.id
+      GoogleCalendar.new(google_calendar_details, events)
     end
 
     def self.create_calendar_details calendar_name

@@ -68,7 +68,7 @@ module FacebookGoogleCalendarSync
         logger.info "Adding '#{facebook_event.summary}' to #{google_calendar.summary}"
         add_new_event facebook_event
       else
-        logger.info "Not updating '#{facebook_event.summary}' as it has been deleted from the target calendar since #{google_calendar.last_known_event_update}."
+        logger.info "Not updating '#{facebook_event.summary}' as it in the past or has been deleted from the target calendar since #{google_calendar.last_known_event_update}."
       end
     end
 
