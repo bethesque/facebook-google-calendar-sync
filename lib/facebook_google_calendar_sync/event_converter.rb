@@ -4,7 +4,7 @@ module FacebookGoogleCalendarSync
   class EventConverter
 
     attr_accessor :facebook_event, :google_calendar_id
-    STATUS_MAPPINGS = {'NEEDS-ACTION' => 'needsAction', 'ACCEPTED' => 'accepted'}
+    STATUS_MAPPINGS = {'NEEDS-ACTION' => 'needsAction', 'ACCEPTED' => 'accepted', 'TENTATIVE' => 'needsAction'}
 
     def initialize facebook_event, google_calendar_id
       @facebook_event = facebook_event
@@ -34,7 +34,7 @@ module FacebookGoogleCalendarSync
     end
 
     def partstat
-      STATUS_MAPPINGS[facebook_event.to_s.scan(/PARTSTAT::(.*)/).flatten.first()]
+      STATUS_MAPPINGS[facebook_event.to_s.scan(/PARTSTAT::(.*)/).flatten.first]
     end
 
     def transparency
