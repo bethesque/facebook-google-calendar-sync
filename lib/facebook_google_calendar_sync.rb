@@ -7,6 +7,8 @@ require 'facebook_google_calendar_sync/google_calendar'
 require 'facebook_google_calendar_sync/google_calendar_client'
 require 'active_support/core_ext/hash/indifferent_access'
 
+Encoding.default_external = Encoding::UTF_8
+Encoding.default_internal = Encoding::UTF_8
 
 module FacebookGoogleCalendarSync
 
