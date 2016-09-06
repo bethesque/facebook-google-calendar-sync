@@ -26,7 +26,7 @@ module FacebookGoogleCalendarSync
     end
 
     def attendees
-      [{"email"=>google_calendar_id, 'responseStatus' => partstat}]
+      [{"email" => google_calendar_id, 'responseStatus' => partstat}]
     end
 
     def description
@@ -50,6 +50,14 @@ module FacebookGoogleCalendarSync
       {
         'email' => 'noreply@facebook.com',
       }
+    end
+
+    def future?
+      dtstart > DateTime.now
+    end
+
+    def past?
+      dtstart < DateTime.now
     end
 
     def method_missing(method, *args, &block)

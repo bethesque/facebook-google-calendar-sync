@@ -15,7 +15,7 @@ module FacebookGoogleCalendarSync
   extend Logging
 
   DEFAULT_CONFIG = {
-    :google_api_config_file => Pathname.new(ENV['HOME']) + '.google-api.yaml', 
+    :google_api_config_file => Pathname.new(ENV['HOME']) + '.google-api.yaml',
     :google_calendar_name => "My Facebook Events",
     :log_level => :info
   }
@@ -26,8 +26,9 @@ module FacebookGoogleCalendarSync
     configure_logger config[:log_level]
     facebook_calendar = retrieve_facebook_calendar config[:facebook_calendar_url]
     google_calendar = GoogleCalendar.find_or_create_calendar config[:google_calendar_name]
+    google_calendar_master_list = GoogleCalendar.find_or_create_calendar(config[:google_calendar_name] + " Master List")
     logger.info "Last known Facebook event update occurred at #{google_calendar.last_known_event_update}"
-    Synchroniser.new(facebook_calendar, google_calendar).synchronise
+    Synchroniser.new(facebook_calendar, google_calendar, google_calendar_master_list).synchronise
   end
 
   private

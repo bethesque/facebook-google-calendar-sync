@@ -67,6 +67,11 @@ module FacebookGoogleCalendarSync
       google_calendar_details
     end
 
+    def to_s
+      event_desc = events.sort{ |e1, e2| e1.summary <=> e2.summary }.collect { |event| "#{event.i_cal_uid} #{event.summary}" }.join("\n")
+      "#{id} #{summary}\n#{event_desc}"
+    end
+
     private
 
     def self.calendar_with_events google_calendar_details
@@ -82,7 +87,7 @@ module FacebookGoogleCalendarSync
     def self.find_or_create_calendar_details calendar_name
       google_calendar_details = find_calendar_details_by_summary calendar_name
       if google_calendar_details == nil
-        logger.info "Creating Google calendar #{calendar_name} with timezone #{timezone}"
+        logger.info "Creating Google calendar #{calendar_name}"
         google_calendar_details = create_calendar_details calendar_name
       else
         logger.info "Found existing Google calendar #{calendar_name}"

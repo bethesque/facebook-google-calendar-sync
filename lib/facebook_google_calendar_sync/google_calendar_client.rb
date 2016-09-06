@@ -54,6 +54,7 @@ end
     end
 
     def add_event calendar_id, event
+      event['attendees'][0]['email'] = calendar_id
       make_call :api_method => calendar_service.events.import,
         :parameters => {'calendarId' => calendar_id},
         :body_object => event

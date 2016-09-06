@@ -11,22 +11,29 @@ module FacebookGoogleCalendarSync
     include GoogleCalendarClient
     include Timezone
 
-    def initialize(facebook_calendar, google_calendar)
+    def initialize(facebook_calendar, google_calendar, google_calendar_master_list)
       @google_calendar = with_timezone(google_calendar, google_calendar.timezone)
-      @events = facebook_calendar.events.collect{ | facebook_event | with_google_calendar_timezone(facebook_event) }
+      @google_calendar_master_list = with_timezone(google_calendar_master_list, google_calendar.timezone)
+      @facebook_events = facebook_calendar.events.collect{ | facebook_event | with_google_calendar_timezone(facebook_event) }
     end
 
-    def events
-      @events
+    def synchronise
+      synchronise_events
+      update_last_known_event_update
+    end
+
+    private
+
+    def facebook_events
+      @facebook_events
     end
 
     def google_calendar
       @google_calendar
     end
 
-    def synchronise
-      synchronise_events
-      update_last_known_event_update
+    def google_calendar_master_list
+      @google_calendar_master_list
     end
 
     def convert facebook_event
@@ -40,7 +47,7 @@ module FacebookGoogleCalendarSync
     #TODO: Fix this method!
     def synchronise_events
       errors = []
-      events.each do | facebook_event |
+      facebook_events.each do | facebook_event |
         converted_event = nil
         begin
           converted_event = convert(facebook_event)
@@ -55,6 +62,7 @@ module FacebookGoogleCalendarSync
     end
 
     def synchronise_event facebook_event
+      return if facebook_event.past?
       google_event = google_calendar.find_event_by_uid facebook_event.uid
       if google_event == nil
         handle_google_event_not_found facebook_event
@@ -64,16 +72,18 @@ module FacebookGoogleCalendarSync
     end
 
     def handle_google_event_not_found facebook_event
-      if event_created_since_calendar_last_modified facebook_event
-        logger.info "Adding '#{facebook_event.summary}' to #{google_calendar.summary}"
-        add_new_event facebook_event
+      if !event_in_master_list? facebook_event
+        logger.info "Adding '#{facebook_event.summary}' to #{google_calendar.summary} as it was not found in #{google_calendar_master_list.summary}."
+        add_new_event facebook_event, google_calendar
+        logger.info "Adding '#{facebook_event.summary}' to #{google_calendar_master_list.summary} as it was not found in #{google_calendar_master_list.summary}"
+        add_new_event facebook_event, google_calendar_master_list
       else
-        logger.info "Not updating '#{facebook_event.summary}' as it in the past or has been deleted from the target calendar since #{google_calendar.last_known_event_update}."
+        logger.info "Not updating '#{facebook_event.summary}' as it was found in #{google_calendar_master_list.summary} but has been deleted from #{google_calendar.summary}"
       end
     end
 
     def handle_google_event_found facebook_event, google_event
-      if event_updated_since_calendar_last_modified facebook_event
+      if event_updated_since_calendar_last_modified? facebook_event
         logger.info "Updating '#{facebook_event.summary}' in #{google_calendar.summary}"
         update_existing_event facebook_event, google_event
       else
@@ -81,8 +91,8 @@ module FacebookGoogleCalendarSync
       end
     end
 
-    def add_new_event facebook_event
-      add_event google_calendar.id, facebook_event.to_hash
+    def add_new_event facebook_event, target_calendar
+      add_event target_calendar.id, facebook_event.to_hash
     end
 
     def update_existing_event facebook_event, google_event
@@ -93,12 +103,16 @@ module FacebookGoogleCalendarSync
       google_event.to_hash.merge(facebook_event.to_hash)
     end
 
-    def event_updated_since_calendar_last_modified facebook_event
+    def event_updated_since_calendar_last_modified? facebook_event
       facebook_event.last_modified > google_calendar.last_known_event_update
     end
 
     def event_created_since_calendar_last_modified facebook_event
       facebook_event.created > google_calendar.last_known_event_update
+    end
+
+    def event_in_master_list? facebook_event
+      google_calendar_master_list.find_event_by_uid facebook_event.uid
     end
 
     def update_last_known_event_update
@@ -120,7 +134,7 @@ module FacebookGoogleCalendarSync
     #property, because of the slight differences in the clocks between Facebook and Google calendar and the fact that
     #this script takes a non-zero amount of time to run, which could lead to inconsitencies in the synchronisation logic.
     def date_of_most_recent_event_update
-      events.max{ | event_a, event_b | event_a.last_modified <=> event_b.last_modified }.last_modified
+      facebook_events.max{ | event_a, event_b | event_a.last_modified <=> event_b.last_modified }.last_modified
     end
   end
 end
